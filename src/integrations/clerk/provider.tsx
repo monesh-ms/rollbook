@@ -1,9 +1,8 @@
-import { ClerkProvider } from '@clerk/tanstack-react-start'
-
 export default function AppClerkProvider({
-  children,
+	children,
 }: {
-  children: React.ReactNode
+	children: React.ReactNode;
 }) {
-  return <ClerkProvider>{children}</ClerkProvider>
+	// Clerk bypassed for prototype / local testing phase as requested
+	return <>{children}</>;
 }

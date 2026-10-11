@@ -106,3 +106,10 @@ If they already paid, the payment stays. The correction is on the charge. Extra 
 Why: the owner said people go inactive without informing, and accepted this handling on 2026-10-11.
 
 Rejected: a switch that has to be set before they leave. Also rejected: the app counting absences and changing the fee. A wrong cutoff would post a wrong balance.
+
+## 2026-10-11 — Strict component decomposition (< 300 lines) and URL state with nuqs
+
+All component and route files are strictly under 300 lines of code. Complex views are decomposed into focused subcomponents (e.g. `day-scroller.tsx`, `attendee-card.tsx`, `add-player-row.tsx`, `settle-card.tsx`, `settle-summary.tsx`, `fee-action-card.tsx`, `ledger-table.tsx`, `sport-pricing-card.tsx`).
+
+All interactive query state (month stepper, day scroller, batch/sport/status filters, search bars) is synchronized with URL search parameters using `nuqs`, making mobile views bookmarkable and refresh-resilient without global state bloat.
+
