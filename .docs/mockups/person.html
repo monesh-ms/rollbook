@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Asha Iyer · Member Profile & Ledger · Roll Book</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-layout">
+      <!-- Desktop Sidebar -->
+      <aside class="app-sidebar">
+        <div class="sidebar-header">
+          <div class="brand-badge">R</div>
+          <div class="brand-meta">
+            <span class="brand-title">Roll Book</span>
+            <span class="brand-subtitle">MS Sports Academy</span>
+          </div>
+        </div>
+        <nav class="sidebar-nav">
+          <a class="nav-link" href="index.html">
+            <svg fill="none" viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            Overview
+          </a>
+          <a class="nav-link" href="attendance.html">
+            <svg fill="none" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/><path d="m9 16 2 2 4-4"/></svg>
+            Today's Attendance
+          </a>
+          <a class="nav-link" href="settle.html">
+            <svg fill="none" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
+            Monthly Settle
+          </a>
+          <a class="nav-link active" href="people.html">
+            <svg fill="none" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            People Directory
+          </a>
+          <a class="nav-link" href="settings.html">
+            <svg fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            Settings & Rates
+          </a>
+        </nav>
+        <div class="sidebar-footer">
+          <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 550;">Management</span>
+          <button class="theme-toggle" onclick="toggleTheme()">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+            <span>Theme</span>
+          </button>
+        </div>
+      </aside>
+
+      <!-- Main Shell -->
+      <div class="app-main">
+        <header class="app-topbar">
+          <div class="topbar-left">
+            <div class="topbar-breadcrumb">
+              <a href="people.html" style="color: inherit;">People</a>
+              <span>/</span>
+              <span class="current">Asha Iyer</span>
+            </div>
+          </div>
+          <div class="topbar-right">
+            <span class="badge badge-owe" id="profileStatusBadge">₹3,000 Due</span>
+          </div>
+        </header>
+
+        <main class="app-content">
+          <!-- Member Profile Header Card -->
+          <div class="card" style="margin-bottom: 1.5rem; padding: 1.5rem;">
+            <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; flex-wrap: wrap;">
+              <div style="display: flex; align-items: center; gap: 1.25rem;">
+                <div class="avatar-initial sport-badminton" style="width: 56px; height: 56px; font-size: 1.35rem;">AI</div>
+                <div style="display: flex; flex-direction: column; gap: 0.35rem;">
+                  <div style="display: flex; align-items: center; gap: 0.6rem;">
+                    <h1 style="font-size: 1.6rem;">Asha Iyer</h1>
+                    <span class="badge badge-student">Student</span>
+                    <span class="badge badge-sport" id="activeStatusTag">Active</span>
+                  </div>
+                  <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; font-size: 0.88rem; color: var(--text-secondary);">
+                    <span>🏸 Badminton</span>
+                    <span>•</span>
+                    <span>🌅 Morning Batch</span>
+                    <span>•</span>
+                    <span>📞 90000 00000</span>
+                    <span>•</span>
+                    <span>📍 14 Sample Lane</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Current Month Settlement Action Card -->
+          <div class="card" style="margin-bottom: 1.75rem;" id="monthActionCard">
+            <div class="card-header" style="background-color: var(--danger-surface); border-bottom-color: var(--danger-border);">
+              <div class="card-title" style="color: var(--danger-text);">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
+                <span>Current Month: October 2026 (Unsettled)</span>
+              </div>
+              <span class="badge badge-owe">Carryover Active</span>
+            </div>
+            <div class="card-body" style="display: flex; flex-direction: column; gap: 1.25rem;">
+              <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; flex-wrap: wrap;">
+                <div>
+                  <div style="font-size: 1.05rem; font-weight: 700; color: var(--danger-text); margin-bottom: 0.25rem;">
+                    Suggested Settlement: ₹3,000
+                  </div>
+                  <div style="font-size: 0.88rem; color: var(--text-secondary); line-height: 1.5;">
+                    • September unpaid arrears: <strong>₹1,000</strong><br />
+                    • October scheduled monthly fee: <strong>₹2,000</strong>
+                  </div>
+                  <div style="margin-top: 0.5rem; font-size: 0.8rem; color: var(--text-muted); background: var(--bg-surface-subtle); padding: 0.4rem 0.65rem; border-radius: var(--radius-xs); display: inline-block;">
+                    Hint: No attendance marked this month. (Domain rule: absences do not auto-discount the fee)
+                  </div>
+                </div>
+
+                <!-- Record Payment Form -->
+                <div style="display: flex; align-items: flex-end; gap: 0.75rem; flex-wrap: wrap;">
+                  <div class="input-group">
+                    <label class="input-label">Amount Paid</label>
+                    <div class="input-money-wrap">
+                      <span class="input-money-prefix">₹</span>
+                      <input class="input-text input-money" id="payAmountInput" value="3,000" style="width: 130px;" />
+                    </div>
+                  </div>
+                  <button class="btn btn-primary" onclick="recordMemberPayment()">
+                    Record Payment
+                  </button>
+                </div>
+              </div>
+
+              <!-- Management Override Actions -->
+              <div style="border-top: 1px solid var(--border-subtle); padding-top: 1rem; display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+                <span style="font-size: 0.8rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase;">Management Actions:</span>
+                <button class="btn btn-secondary btn-sm" onclick="applyNoFeeThisMonth()">
+                  No Fee This Month
+                </button>
+                <button class="btn btn-secondary btn-sm" onclick="applyChargeVisits()">
+                  Charge Visits Instead
+                </button>
+                <button class="btn btn-danger btn-sm" onclick="setMemberInactive()">
+                  Set Inactive
+                </button>
+              </div>
+
+              <div style="font-size: 0.78rem; color: var(--text-muted); line-height: 1.45; background: var(--bg-surface-subtle); padding: 0.6rem 0.85rem; border-radius: var(--radius-xs);">
+                <strong>Management Rule:</strong> “Charge visits instead” removes this month’s fee. You add one visit charge for each day they came (at guest rate). The app does not count days automatically. A payment already recorded stays, and any surplus lowers the next suggested total.
+              </div>
+            </div>
+          </div>
+
+          <!-- Transaction & Activity Ledger (Append-Only) -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/></svg>
+                <span>Append-Only Transaction Ledger</span>
+              </div>
+              <span class="stat-meta">Immutable Financial Log</span>
+            </div>
+            <div class="card-body" style="padding: 0;">
+              <table class="clean-table" id="ledgerTable">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Transaction Type</th>
+                    <th>Description / Notes</th>
+                    <th style="text-align: right;">Amount (INR)</th>
+                  </tr>
+                </thead>
+                <tbody id="ledgerBody">
+                  <tr>
+                    <td class="mono-num" style="color: var(--text-secondary);">01 Oct 2026</td>
+                    <td><span class="badge badge-owe">Charge</span></td>
+                    <td>October monthly fee generated from settings (Student, Badminton)</td>
+                    <td style="text-align: right; font-weight: 700; font-family: var(--font-mono); color: var(--danger-text);">+₹2,000</td>
+                  </tr>
+                  <tr>
+                    <td class="mono-num" style="color: var(--text-secondary);">12 Sep 2026</td>
+                    <td><span class="badge badge-settled">Payment</span></td>
+                    <td>Partial payment received. (September remained open for ₹1,000)</td>
+                    <td style="text-align: right; font-weight: 700; font-family: var(--font-mono); color: var(--success);">-₹1,000</td>
+                  </tr>
+                  <tr>
+                    <td class="mono-num" style="color: var(--text-secondary);">01 Sep 2026</td>
+                    <td><span class="badge badge-owe">Charge</span></td>
+                    <td>September monthly fee generated from settings (Student, Badminton)</td>
+                    <td style="text-align: right; font-weight: 700; font-family: var(--font-mono); color: var(--danger-text);">+₹2,000</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </main>
+      </div>
+
+      <!-- Mobile Bottom Dock -->
+      <nav class="mobile-dock">
+        <a class="mobile-nav-item" href="attendance.html">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+          Today
+        </a>
+        <a class="mobile-nav-item" href="settle.html">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
+          Settle
+        </a>
+        <a class="mobile-nav-item active" href="people.html">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+          People
+        </a>
+        <a class="mobile-nav-item" href="settings.html">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          Settings
+        </a>
+      </nav>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script>
+      function toggleTheme() {
+        const html = document.documentElement;
+        const current = html.getAttribute('data-theme');
+        const next = current === 'dark' ? 'light' : 'dark';
+        html.setAttribute('data-theme', next);
+      }
+
+      function showToast(msg) {
+        const container = document.getElementById('toastContainer');
+        const toast = document.createElement('div');
+        toast.className = 'toast';
+        toast.innerHTML = `<span>✓</span><span>${msg}</span>`;
+        container.appendChild(toast);
+        setTimeout(() => toast.remove(), 2600);
+      }
+
+      function recordMemberPayment() {
+        const amount = document.getElementById('payAmountInput').value;
+        const tbody = document.getElementById('ledgerBody');
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td class="mono-num" style="color: var(--text-secondary);">11 Oct 2026</td>
+          <td><span class="badge badge-settled">Payment</span></td>
+          <td>Settlement payment received</td>
+          <td style="text-align: right; font-weight: 700; font-family: var(--font-mono); color: var(--success);">-₹${amount}</td>
+        `;
+        tbody.prepend(tr);
+
+        document.getElementById('profileStatusBadge').className = 'badge badge-settled';
+        document.getElementById('profileStatusBadge').innerText = 'Settled ✓';
+        document.getElementById('monthActionCard').style.opacity = '0.6';
+        showToast(`Saved payment of ₹${amount} for Asha Iyer`);
+      }
+
+      function applyNoFeeThisMonth() {
+        const tbody = document.getElementById('ledgerBody');
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td class="mono-num" style="color: var(--text-secondary);">11 Oct 2026</td>
+          <td><span class="badge badge-warning">Adjustment</span></td>
+          <td>Reversal: October monthly fee waived by management</td>
+          <td style="text-align: right; font-weight: 700; font-family: var(--font-mono); color: var(--brand);">-₹2,000</td>
+        `;
+        tbody.prepend(tr);
+        document.getElementById('profileStatusBadge').innerText = '₹1,000 Prior Arrears';
+        showToast('Waived October fee for Asha Iyer');
+      }
+
+      function applyChargeVisits() {
+        const visits = prompt('Enter number of attended visits this month:', '2');
+        if (!visits) return;
+        const count = parseInt(visits, 10) || 1;
+        const guestRate = 400; // Badminton guest rate
+        const totalVisits = count * guestRate;
+
+        const tbody = document.getElementById('ledgerBody');
+        const tr1 = document.createElement('tr');
+        tr1.innerHTML = `
+          <td class="mono-num" style="color: var(--text-secondary);">11 Oct 2026</td>
+          <td><span class="badge badge-warning">Adjustment</span></td>
+          <td>Monthly fee removed (switched to per-visit charge)</td>
+          <td style="text-align: right; font-weight: 700; font-family: var(--font-mono); color: var(--brand);">-₹2,000</td>
+        `;
+        tbody.prepend(tr1);
+
+        const tr2 = document.createElement('tr');
+        tr2.innerHTML = `
+          <td class="mono-num" style="color: var(--text-secondary);">11 Oct 2026</td>
+          <td><span class="badge badge-owe">Charge</span></td>
+          <td>${count} visits @ ₹${guestRate} (Guest rate)</td>
+          <td style="text-align: right; font-weight: 700; font-family: var(--font-mono); color: var(--danger-text);">+₹${totalVisits}</td>
+        `;
+        tbody.prepend(tr2);
+
+        showToast(`Applied ${count} visit charges totaling ₹${totalVisits}`);
+      }
+
+      function setMemberInactive() {
+        document.getElementById('activeStatusTag').className = 'badge badge-inactive';
+        document.getElementById('activeStatusTag').innerText = 'Inactive';
+        showToast('Asha Iyer marked inactive (no future monthly fees will generate; prior dues remain)');
+      }
+    </script>
+  </body>
+</html>

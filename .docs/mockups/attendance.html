@@ -1,0 +1,358 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Today's Attendance · Roll Book</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-layout">
+      <!-- Desktop Sidebar -->
+      <aside class="app-sidebar">
+        <div class="sidebar-header">
+          <div class="brand-badge">R</div>
+          <div class="brand-meta">
+            <span class="brand-title">Roll Book</span>
+            <span class="brand-subtitle">MS Sports Academy</span>
+          </div>
+        </div>
+        <nav class="sidebar-nav">
+          <a class="nav-link" href="index.html">
+            <svg fill="none" viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            Overview
+          </a>
+          <a class="nav-link active" href="attendance.html">
+            <svg fill="none" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/><path d="m9 16 2 2 4-4"/></svg>
+            Today's Attendance
+          </a>
+          <a class="nav-link" href="settle.html">
+            <svg fill="none" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
+            Monthly Settle
+          </a>
+          <a class="nav-link" href="people.html">
+            <svg fill="none" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            People Directory
+          </a>
+          <a class="nav-link" href="settings.html">
+            <svg fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            Settings & Rates
+          </a>
+        </nav>
+        <div class="sidebar-footer">
+          <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 550;">Management</span>
+          <button class="theme-toggle" onclick="toggleTheme()">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+            <span>Theme</span>
+          </button>
+        </div>
+      </aside>
+
+      <!-- Main Shell -->
+      <div class="app-main">
+        <header class="app-topbar">
+          <div class="topbar-left">
+            <div class="topbar-breadcrumb">
+              <span>Roll Book</span>
+              <span>/</span>
+              <span class="current">Attendance</span>
+            </div>
+          </div>
+          <div class="topbar-right">
+            <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; font-weight: 600; color: var(--text-secondary);">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              <span>Session: Live</span>
+            </div>
+          </div>
+        </header>
+
+        <main class="app-content">
+          <div class="page-header">
+            <div class="page-title-wrap">
+              <div style="display: flex; align-items: center; gap: 0.75rem;">
+                <h1>Sunday, 11 October 2026</h1>
+                <span class="badge badge-settled">Local Session Date</span>
+              </div>
+              <p class="page-subtitle">
+                Mark active attendees. Unmarked people have no record; they are not assumed absent. Marking attendance does not alter monthly fees.
+              </p>
+            </div>
+            <div class="page-actions">
+              <button class="btn btn-secondary btn-sm" onclick="showToast('Date navigation is enabled in full app')">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg>
+                Previous Day
+              </button>
+              <button class="btn btn-secondary btn-sm" onclick="showToast('Switched to Today')">Today</button>
+            </div>
+          </div>
+
+          <!-- Quick Stats Bar -->
+          <div class="stat-grid">
+            <div class="stat-tile">
+              <span class="stat-label">Present in Session</span>
+              <span class="stat-value" id="presentCount" style="color: var(--success);">3</span>
+              <span class="stat-meta">Active on courts today</span>
+            </div>
+            <div class="stat-tile">
+              <span class="stat-label">Marked Absent</span>
+              <span class="stat-value" id="absentCount" style="color: var(--text-muted);">0</span>
+              <span class="stat-meta">Explicitly marked absent</span>
+            </div>
+            <div class="stat-tile">
+              <span class="stat-label">Total in Roster</span>
+              <span class="stat-value mono-num" id="totalMarked">3</span>
+              <span class="stat-meta">Morning + Evening batches</span>
+            </div>
+          </div>
+
+          <!-- Morning Batch Section -->
+          <div class="card" style="margin-bottom: 1.75rem;">
+            <div class="card-header">
+              <div class="card-title">
+                <span style="font-size: 1.15rem;">🌅</span>
+                <span>Morning Batch</span>
+                <span class="badge badge-sport">06:00 – 08:30</span>
+              </div>
+              <span class="stat-meta" id="morningBatchCount">1 Marked</span>
+            </div>
+            <div class="card-body" style="padding: 0;">
+              <div class="roster-list" id="morningList">
+                <div class="roster-row">
+                  <div class="roster-info">
+                    <div class="avatar-initial sport-badminton">KS</div>
+                    <div class="person-details">
+                      <div class="person-name">
+                        <a href="person.html" style="color: inherit; text-decoration: none;">Kabir Sen</a>
+                        <span class="badge badge-student">Student</span>
+                      </div>
+                      <div class="person-meta">
+                        <span class="badge badge-sport">Badminton</span>
+                        <span>•</span>
+                        <span>Morning regular</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="attendance-toggle" data-person="Kabir Sen">
+                    <button class="att-btn is-present" onclick="setAttendance(this, 'present')">
+                      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                      Present
+                    </button>
+                    <button class="att-btn" onclick="setAttendance(this, 'absent')">
+                      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" x2="6" y1="6" y2="18"/><line x1="6" x2="18" y1="6" y2="18"/></svg>
+                      Absent
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <!-- Add Person Form Row -->
+              <div style="padding: 0.9rem 1.35rem; background-color: var(--bg-surface-subtle); border-top: 1px solid var(--border-subtle); display: flex; align-items: center; gap: 0.75rem;">
+                <input class="input-text" id="addMorningInput" placeholder="Add player to Morning batch..." style="max-width: 320px;" />
+                <button class="btn btn-secondary btn-sm" onclick="addPlayerToBatch('morning')">
+                  <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" x2="12" y1="5" y2="19"/><line x1="5" x2="19" y1="12" y2="12"/></svg>
+                  Add Player
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Evening Batch Section -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <span style="font-size: 1.15rem;">🌇</span>
+                <span>Evening Batch</span>
+                <span class="badge badge-sport">16:30 – 19:00</span>
+              </div>
+              <span class="stat-meta" id="eveningBatchCount">2 Marked</span>
+            </div>
+            <div class="card-body" style="padding: 0;">
+              <div class="roster-list" id="eveningList">
+                <!-- Person 1 -->
+                <div class="roster-row">
+                  <div class="roster-info">
+                    <div class="avatar-initial sport-tennis">DS</div>
+                    <div class="person-details">
+                      <div class="person-name">
+                        <a href="person.html" style="color: inherit; text-decoration: none;">Dev Shah</a>
+                        <span class="badge badge-member">Member</span>
+                      </div>
+                      <div class="person-meta">
+                        <span class="badge badge-sport">Tennis</span>
+                        <span>•</span>
+                        <span>Evening regular</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="attendance-toggle" data-person="Dev Shah">
+                    <button class="att-btn is-present" onclick="setAttendance(this, 'present')">
+                      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                      Present
+                    </button>
+                    <button class="att-btn" onclick="setAttendance(this, 'absent')">
+                      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" x2="6" y1="6" y2="18"/><line x1="6" x2="18" y1="6" y2="18"/></svg>
+                      Absent
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Person 2 (Guest Player) -->
+                <div class="roster-row">
+                  <div class="roster-info">
+                    <div class="avatar-initial sport-tennis">LD</div>
+                    <div class="person-details">
+                      <div class="person-name">
+                        <a href="person.html" style="color: inherit; text-decoration: none;">Leela Das</a>
+                        <span class="badge badge-guest">Guest Player</span>
+                      </div>
+                      <div class="person-meta">
+                        <span class="badge badge-sport">Tennis</span>
+                        <span>•</span>
+                        <span style="color: var(--warning-text); font-weight: 550;">Guest Visit: Mark does not auto-charge; record visit on profile</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="attendance-toggle" data-person="Leela Das">
+                    <button class="att-btn is-present" onclick="setAttendance(this, 'present')">
+                      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                      Present
+                    </button>
+                    <button class="att-btn" onclick="setAttendance(this, 'absent')">
+                      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" x2="6" y1="6" y2="18"/><line x1="6" x2="18" y1="6" y2="18"/></svg>
+                      Absent
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Add Person Form Row -->
+              <div style="padding: 0.9rem 1.35rem; background-color: var(--bg-surface-subtle); border-top: 1px solid var(--border-subtle); display: flex; align-items: center; gap: 0.75rem;">
+                <input class="input-text" id="addEveningInput" placeholder="Add player to Evening batch..." style="max-width: 320px;" />
+                <button class="btn btn-secondary btn-sm" onclick="addPlayerToBatch('evening')">
+                  <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" x2="12" y1="5" y2="19"/><line x1="5" x2="19" y1="12" y2="12"/></svg>
+                  Add Player
+                </button>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+
+      <!-- Mobile Bottom Dock -->
+      <nav class="mobile-dock">
+        <a class="mobile-nav-item active" href="attendance.html">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+          Today
+        </a>
+        <a class="mobile-nav-item" href="settle.html">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
+          Settle
+        </a>
+        <a class="mobile-nav-item" href="people.html">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+          People
+        </a>
+        <a class="mobile-nav-item" href="settings.html">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          Settings
+        </a>
+      </nav>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script>
+      function toggleTheme() {
+        const html = document.documentElement;
+        const current = html.getAttribute('data-theme');
+        const next = current === 'dark' ? 'light' : 'dark';
+        html.setAttribute('data-theme', next);
+      }
+
+      function showToast(msg) {
+        const container = document.getElementById('toastContainer');
+        const toast = document.createElement('div');
+        toast.className = 'toast';
+        toast.innerHTML = `<span>✓</span><span>${msg}</span>`;
+        container.appendChild(toast);
+        setTimeout(() => toast.remove(), 2600);
+      }
+
+      function setAttendance(button, state) {
+        const toggle = button.parentElement;
+        const person = toggle.getAttribute('data-person');
+        const buttons = toggle.querySelectorAll('.att-btn');
+        buttons.forEach(b => {
+          b.classList.remove('is-present', 'is-absent');
+        });
+
+        if (state === 'present') {
+          button.classList.add('is-present');
+          showToast(`Marked ${person} as Present`);
+        } else {
+          button.classList.add('is-absent');
+          showToast(`Marked ${person} as Absent`);
+        }
+        recalcStats();
+      }
+
+      function recalcStats() {
+        const presents = document.querySelectorAll('.att-btn.is-present').length;
+        const absents = document.querySelectorAll('.att-btn.is-absent').length;
+        document.getElementById('presentCount').innerText = presents;
+        document.getElementById('absentCount').innerText = absents;
+        document.getElementById('totalMarked').innerText = presents + absents;
+      }
+
+      function addPlayerToBatch(batch) {
+        const inputId = batch === 'morning' ? 'addMorningInput' : 'addEveningInput';
+        const listId = batch === 'morning' ? 'morningList' : 'eveningList';
+        const input = document.getElementById(inputId);
+        const name = input.value.trim();
+        if (!name) return;
+
+        const initials = name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+        const list = document.getElementById(listId);
+
+        const newRow = document.createElement('div');
+        newRow.className = 'roster-row';
+        newRow.innerHTML = `
+          <div class="roster-info">
+            <div class="avatar-initial sport-badminton">${initials}</div>
+            <div class="person-details">
+              <div class="person-name">
+                <a href="person.html" style="color: inherit;">${name}</a>
+                <span class="badge badge-student">Student</span>
+              </div>
+              <div class="person-meta">
+                <span class="badge badge-sport">Badminton</span>
+                <span>•</span>
+                <span>Added today</span>
+              </div>
+            </div>
+          </div>
+          <div class="attendance-toggle" data-person="${name}">
+            <button class="att-btn is-present" onclick="setAttendance(this, 'present')">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+              Present
+            </button>
+            <button class="att-btn" onclick="setAttendance(this, 'absent')">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" x2="6" y1="6" y2="18"/><line x1="6" x2="18" y1="6" y2="18"/></svg>
+              Absent
+            </button>
+          </div>
+        `;
+        list.appendChild(newRow);
+        input.value = '';
+        showToast(`Added ${name} to ${batch} batch`);
+        recalcStats();
+      }
+    </script>
+  </body>
+</html>

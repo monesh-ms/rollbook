@@ -1,0 +1,460 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>People Directory · Roll Book</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-layout">
+      <!-- Desktop Sidebar -->
+      <aside class="app-sidebar">
+        <div class="sidebar-header">
+          <div class="brand-badge">R</div>
+          <div class="brand-meta">
+            <span class="brand-title">Roll Book</span>
+            <span class="brand-subtitle">MS Sports Academy</span>
+          </div>
+        </div>
+        <nav class="sidebar-nav">
+          <a class="nav-link" href="index.html">
+            <svg fill="none" viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            Overview
+          </a>
+          <a class="nav-link" href="attendance.html">
+            <svg fill="none" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/><path d="m9 16 2 2 4-4"/></svg>
+            Today's Attendance
+          </a>
+          <a class="nav-link" href="settle.html">
+            <svg fill="none" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
+            Monthly Settle
+          </a>
+          <a class="nav-link active" href="people.html">
+            <svg fill="none" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            People Directory
+          </a>
+          <a class="nav-link" href="settings.html">
+            <svg fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            Settings & Rates
+          </a>
+        </nav>
+        <div class="sidebar-footer">
+          <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 550;">Management</span>
+          <button class="theme-toggle" onclick="toggleTheme()">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+            <span>Theme</span>
+          </button>
+        </div>
+      </aside>
+
+      <!-- Main Shell -->
+      <div class="app-main">
+        <header class="app-topbar">
+          <div class="topbar-left">
+            <div class="topbar-breadcrumb">
+              <span>Roll Book</span>
+              <span>/</span>
+              <span class="current">People</span>
+            </div>
+          </div>
+          <div class="topbar-right">
+            <button class="btn btn-primary btn-sm" onclick="toggleAddPersonModal()">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" x2="12" y1="5" y2="19"/><line x1="5" x2="19" y1="12" y2="12"/></svg>
+              Register Person
+            </button>
+          </div>
+        </header>
+
+        <main class="app-content">
+          <div class="page-header">
+            <div class="page-title-wrap">
+              <div style="display: flex; align-items: center; gap: 0.75rem;">
+                <h1>People Directory</h1>
+                <span class="badge badge-sport" id="directoryCount">6 Enrolled</span>
+              </div>
+              <p class="page-subtitle">
+                Academy members, coached students, and guest visitors. Inactive people stay in history to preserve unpaid balances and transaction logs.
+              </p>
+            </div>
+            <div class="page-actions">
+              <input class="input-text" id="searchInput" placeholder="Search by name, sport, or batch..." style="width: 260px;" oninput="searchPeople(this.value)" />
+            </div>
+          </div>
+
+          <!-- Quick Filter Tabs -->
+          <div class="filter-bar">
+            <button class="filter-pill active" onclick="filterPeople(this, 'all')">All People</button>
+            <button class="filter-pill" onclick="filterPeople(this, 'student')">Students</button>
+            <button class="filter-pill" onclick="filterPeople(this, 'member')">Members</button>
+            <button class="filter-pill" onclick="filterPeople(this, 'guest')">Guests</button>
+            <button class="filter-pill" onclick="filterPeople(this, 'inactive')">Inactive</button>
+          </div>
+
+          <!-- People Directory Roster -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                <span>Registered Academy Members</span>
+              </div>
+              <span class="stat-meta">Domain Rules: No photos, DOB, or school</span>
+            </div>
+            <div class="card-body" style="padding: 0;">
+              <div class="roster-list" id="peopleRoster">
+                
+                <!-- Person 1: Asha Iyer -->
+                <div class="roster-row" data-type="student" data-status="active" data-search="asha iyer student badminton morning">
+                  <div class="roster-info">
+                    <div class="avatar-initial sport-badminton">AI</div>
+                    <div class="person-details">
+                      <div class="person-name">
+                        <a href="person.html" style="color: inherit;">Asha Iyer</a>
+                        <span class="badge badge-student">Student</span>
+                        <span class="badge badge-owe">₹3,000 Unsettled</span>
+                      </div>
+                      <div class="person-meta">
+                        <span class="badge badge-sport">Badminton</span>
+                        <span class="badge badge-sport">Morning</span>
+                        <span>•</span>
+                        <span>Ph: 90000 00000</span>
+                        <span>•</span>
+                        <span>14 Sample Lane</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <a class="btn btn-secondary btn-sm" href="person.html">
+                      View Ledger
+                      <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+                    </a>
+                  </div>
+                </div>
+
+                <!-- Person 2: Dev Shah -->
+                <div class="roster-row" data-type="member" data-status="active" data-search="dev shah member tennis evening">
+                  <div class="roster-info">
+                    <div class="avatar-initial sport-tennis">DS</div>
+                    <div class="person-details">
+                      <div class="person-name">
+                        <a href="person.html" style="color: inherit;">Dev Shah</a>
+                        <span class="badge badge-member">Member</span>
+                        <span class="badge badge-owe">₹4,500 Due</span>
+                      </div>
+                      <div class="person-meta">
+                        <span class="badge badge-sport">Tennis</span>
+                        <span class="badge badge-sport">Evening</span>
+                        <span>•</span>
+                        <span>Ph: 98888 11111</span>
+                        <span>•</span>
+                        <span>22 Park View</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <a class="btn btn-secondary btn-sm" href="person.html">
+                      View Ledger
+                      <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+                    </a>
+                  </div>
+                </div>
+
+                <!-- Person 3: Meera Nair -->
+                <div class="roster-row" data-type="student" data-status="active" data-search="meera nair student tennis badminton both">
+                  <div class="roster-info">
+                    <div class="avatar-initial sport-badminton">MN</div>
+                    <div class="person-details">
+                      <div class="person-name">
+                        <a href="person.html" style="color: inherit;">Meera Nair</a>
+                        <span class="badge badge-student">Student</span>
+                        <span class="badge badge-warning">2 Games (Typed ₹5,500)</span>
+                      </div>
+                      <div class="person-meta">
+                        <span class="badge badge-sport">Tennis & Badminton</span>
+                        <span class="badge badge-sport">Both Batches</span>
+                        <span>•</span>
+                        <span>Ph: 97777 22222</span>
+                        <span>•</span>
+                        <span>5 Temple Road</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <a class="btn btn-secondary btn-sm" href="person.html">
+                      View Ledger
+                      <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+                    </a>
+                  </div>
+                </div>
+
+                <!-- Person 4: Ravi Menon (Inactive with Arrears) -->
+                <div class="roster-row" data-type="member" data-status="inactive" data-search="ravi menon member badminton inactive">
+                  <div class="roster-info">
+                    <div class="avatar-initial sport-badminton">RM</div>
+                    <div class="person-details">
+                      <div class="person-name">
+                        <a href="person.html" style="color: inherit;">Ravi Menon</a>
+                        <span class="badge badge-inactive">Inactive</span>
+                        <span class="badge badge-owe">₹1,500 Sep Arrears</span>
+                      </div>
+                      <div class="person-meta">
+                        <span class="badge badge-sport">Badminton</span>
+                        <span class="badge badge-sport">Morning</span>
+                        <span>•</span>
+                        <span>Ph: 96666 33333</span>
+                        <span>•</span>
+                        <span>8 Lake Road</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <a class="btn btn-secondary btn-sm" href="person.html">
+                      View Ledger
+                      <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+                    </a>
+                  </div>
+                </div>
+
+                <!-- Person 5: Leela Das (Guest) -->
+                <div class="roster-row" data-type="guest" data-status="active" data-search="leela das guest tennis">
+                  <div class="roster-info">
+                    <div class="avatar-initial sport-tennis">LD</div>
+                    <div class="person-details">
+                      <div class="person-name">
+                        <a href="person.html" style="color: inherit;">Leela Das</a>
+                        <span class="badge badge-guest">Guest Player</span>
+                      </div>
+                      <div class="person-meta">
+                        <span class="badge badge-sport">Tennis</span>
+                        <span>•</span>
+                        <span style="color: var(--text-muted);">Pay-per-visit (₹700/visit) • Not on monthly settle</span>
+                        <span>•</span>
+                        <span>Ph: 95555 44444</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <a class="btn btn-secondary btn-sm" href="person.html">
+                      View Ledger
+                      <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+                    </a>
+                  </div>
+                </div>
+
+                <!-- Person 6: Kabir Sen -->
+                <div class="roster-row" data-type="student" data-status="active" data-search="kabir sen student badminton morning">
+                  <div class="roster-info">
+                    <div class="avatar-initial sport-badminton">KS</div>
+                    <div class="person-details">
+                      <div class="person-name">
+                        <a href="person.html" style="color: inherit;">Kabir Sen</a>
+                        <span class="badge badge-student">Student</span>
+                        <span class="badge badge-settled">Settled</span>
+                      </div>
+                      <div class="person-meta">
+                        <span class="badge badge-sport">Badminton</span>
+                        <span class="badge badge-sport">Morning</span>
+                        <span>•</span>
+                        <span>Ph: 94444 55555</span>
+                        <span>•</span>
+                        <span>12 Garden View</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <a class="btn btn-secondary btn-sm" href="person.html">
+                      View Ledger
+                      <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+                    </a>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+
+      <!-- Add Person Modal -->
+      <div id="addPersonModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100; backdrop-filter: blur(4px); align-items: center; justify-content: center; padding: 1rem;">
+        <div class="card" style="max-width: 480px; width: 100%; box-shadow: var(--shadow-float);">
+          <div class="card-header">
+            <h3 class="card-title">Register New Academy Member</h3>
+            <button onclick="toggleAddPersonModal()" style="border: none; background: transparent; cursor: pointer; color: var(--text-muted); font-size: 1.25rem;">✕</button>
+          </div>
+          <div class="card-body" style="display: flex; flex-direction: column; gap: 1rem;">
+            <div class="input-group">
+              <label class="input-label">Full Name</label>
+              <input class="input-text" id="newPersonName" placeholder="e.g. Rohan Varma" />
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+              <div class="input-group">
+                <label class="input-label">Category</label>
+                <select class="input-text" id="newPersonCategory">
+                  <option value="student">Student (Needs coaching)</option>
+                  <option value="member">Member (Regular)</option>
+                  <option value="guest">Guest (Per visit)</option>
+                </select>
+              </div>
+              <div class="input-group">
+                <label class="input-label">Sport</label>
+                <select class="input-text" id="newPersonSport">
+                  <option value="Badminton">Badminton</option>
+                  <option value="Tennis">Tennis</option>
+                  <option value="Both">Both Games</option>
+                </select>
+              </div>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+              <div class="input-group">
+                <label class="input-label">Batch</label>
+                <select class="input-text" id="newPersonBatch">
+                  <option value="Morning">Morning</option>
+                  <option value="Evening">Evening</option>
+                  <option value="Both">Both (Morning & Evening)</option>
+                </select>
+              </div>
+              <div class="input-group">
+                <label class="input-label">Contact Phone</label>
+                <input class="input-text" id="newPersonPhone" placeholder="10-digit number" />
+              </div>
+            </div>
+            <div class="input-group">
+              <label class="input-label">Address</label>
+              <input class="input-text" id="newPersonAddress" placeholder="Street / Area address" />
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 0.5rem;">
+              <button class="btn btn-secondary" onclick="toggleAddPersonModal()">Cancel</button>
+              <button class="btn btn-primary" onclick="submitNewPerson()">Save Member</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mobile Bottom Dock -->
+      <nav class="mobile-dock">
+        <a class="mobile-nav-item" href="attendance.html">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+          Today
+        </a>
+        <a class="mobile-nav-item" href="settle.html">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
+          Settle
+        </a>
+        <a class="mobile-nav-item active" href="people.html">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+          People
+        </a>
+        <a class="mobile-nav-item" href="settings.html">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          Settings
+        </a>
+      </nav>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script>
+      function toggleTheme() {
+        const html = document.documentElement;
+        const current = html.getAttribute('data-theme');
+        const next = current === 'dark' ? 'light' : 'dark';
+        html.setAttribute('data-theme', next);
+      }
+
+      function showToast(msg) {
+        const container = document.getElementById('toastContainer');
+        const toast = document.createElement('div');
+        toast.className = 'toast';
+        toast.innerHTML = `<span>✓</span><span>${msg}</span>`;
+        container.appendChild(toast);
+        setTimeout(() => toast.remove(), 2600);
+      }
+
+      function filterPeople(pill, filter) {
+        document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+        pill.classList.add('active');
+
+        const rows = document.querySelectorAll('#peopleRoster .roster-row');
+        rows.forEach(r => {
+          if (filter === 'all') {
+            r.style.display = 'flex';
+          } else if (filter === 'inactive') {
+            r.style.display = r.getAttribute('data-status') === 'inactive' ? 'flex' : 'none';
+          } else {
+            r.style.display = (r.getAttribute('data-type') === filter && r.getAttribute('data-status') === 'active') ? 'flex' : 'none';
+          }
+        });
+      }
+
+      function searchPeople(query) {
+        const q = query.toLowerCase().trim();
+        const rows = document.querySelectorAll('#peopleRoster .roster-row');
+        rows.forEach(r => {
+          const searchData = r.getAttribute('data-search') || '';
+          r.style.display = searchData.includes(q) ? 'flex' : 'none';
+        });
+      }
+
+      function toggleAddPersonModal() {
+        const modal = document.getElementById('addPersonModal');
+        modal.style.display = modal.style.display === 'flex' ? 'none' : 'flex';
+      }
+
+      function submitNewPerson() {
+        const name = document.getElementById('newPersonName').value.trim();
+        if (!name) return;
+        const category = document.getElementById('newPersonCategory').value;
+        const sport = document.getElementById('newPersonSport').value;
+        const batch = document.getElementById('newPersonBatch').value;
+        const phone = document.getElementById('newPersonPhone').value || 'Unlisted';
+        const address = document.getElementById('newPersonAddress').value || 'Unlisted';
+
+        const initials = name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+        const roster = document.getElementById('peopleRoster');
+
+        const newRow = document.createElement('div');
+        newRow.className = 'roster-row';
+        newRow.setAttribute('data-type', category);
+        newRow.setAttribute('data-status', 'active');
+        newRow.setAttribute('data-search', `${name} ${category} ${sport} ${batch}`.toLowerCase());
+        newRow.innerHTML = `
+          <div class="roster-info">
+            <div class="avatar-initial sport-badminton">${initials}</div>
+            <div class="person-details">
+              <div class="person-name">
+                <a href="person.html" style="color: inherit;">${name}</a>
+                <span class="badge badge-${category}">${category.charAt(0).toUpperCase() + category.slice(1)}</span>
+                <span class="badge badge-settled">New</span>
+              </div>
+              <div class="person-meta">
+                <span class="badge badge-sport">${sport}</span>
+                <span class="badge badge-sport">${batch}</span>
+                <span>•</span>
+                <span>Ph: ${phone}</span>
+                <span>•</span>
+                <span>${address}</span>
+              </div>
+            </div>
+          </div>
+          <div>
+            <a class="btn btn-secondary btn-sm" href="person.html">
+              View Ledger
+              <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+            </a>
+          </div>
+        `;
+        roster.prepend(newRow);
+        toggleAddPersonModal();
+        showToast(`Registered ${name} successfully!`);
+      }
+    </script>
+  </body>
+</html>

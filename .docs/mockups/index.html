@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Roll Book · Modern Academy Management Prototype</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-layout">
+      <!-- Desktop Sidebar -->
+      <aside class="app-sidebar">
+        <div class="sidebar-header">
+          <div class="brand-badge">R</div>
+          <div class="brand-meta">
+            <span class="brand-title">Roll Book</span>
+            <span class="brand-subtitle">MS Sports Academy</span>
+          </div>
+        </div>
+        <nav class="sidebar-nav">
+          <a class="nav-link active" href="index.html">
+            <svg fill="none" viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            Overview
+          </a>
+          <a class="nav-link" href="attendance.html">
+            <svg fill="none" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/><path d="m9 16 2 2 4-4"/></svg>
+            Today's Attendance
+          </a>
+          <a class="nav-link" href="settle.html">
+            <svg fill="none" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
+            Monthly Settle
+          </a>
+          <a class="nav-link" href="people.html">
+            <svg fill="none" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            People Directory
+          </a>
+          <a class="nav-link" href="settings.html">
+            <svg fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            Settings & Rates
+          </a>
+        </nav>
+        <div class="sidebar-footer">
+          <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 550;">UI Prototype v2</span>
+          <button class="theme-toggle" id="themeBtn" onclick="toggleTheme()">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+            <span>Theme</span>
+          </button>
+        </div>
+      </aside>
+
+      <!-- Main Shell -->
+      <div class="app-main">
+        <header class="app-topbar">
+          <div class="topbar-left">
+            <div class="topbar-breadcrumb">
+              <span>Roll Book</span>
+              <span>/</span>
+              <span class="current">Prototype Hub</span>
+            </div>
+          </div>
+          <div class="topbar-right">
+            <span class="badge badge-member">
+              <span style="width: 6px; height: 6px; border-radius: 50%; background-color: var(--brand);"></span>
+              Management Role
+            </span>
+          </div>
+        </header>
+
+        <main class="app-content">
+          <div class="page-header">
+            <div class="page-title-wrap">
+              <h1>Modern Management Prototype</h1>
+              <p class="page-subtitle">
+                High-performance, domain-focused interface for sports academies. Crafted for rapid attendance marking and 100% correct fee tracking without visual noise or generic templates.
+              </p>
+            </div>
+          </div>
+
+          <!-- Feature & Screen Cards Grid -->
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(310px, 1fr)); gap: 1.25rem; margin-bottom: 2rem;">
+            
+            <!-- Screen 1: Attendance -->
+            <a href="attendance.html" class="card" style="text-decoration: none; padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem;">
+              <div style="display: flex; align-items: center; justify-content: space-between;">
+                <div style="width: 44px; height: 44px; border-radius: var(--radius-sm); background: var(--brand-surface); color: var(--brand); display: flex; align-items: center; justify-content: center;">
+                  <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/><path d="m9 16 2 2 4-4"/></svg>
+                </div>
+                <span class="badge badge-sport">Tactile Toggles</span>
+              </div>
+              <div>
+                <h3 style="font-size: 1.15rem; color: var(--text-primary); margin-bottom: 0.35rem;">Today's Attendance</h3>
+                <p style="font-size: 0.88rem; color: var(--text-secondary); line-height: 1.45;">
+                  Mark Morning and Evening batch sessions with tactile one-click toggles. Distinct handling for regular players, students, and guest visit reminders.
+                </p>
+              </div>
+              <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; font-weight: 600; color: var(--brand); margin-top: auto;">
+                <span>Open Screen</span>
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+              </div>
+            </a>
+
+            <!-- Screen 2: Monthly Settle -->
+            <a href="settle.html" class="card" style="text-decoration: none; padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem;">
+              <div style="display: flex; align-items: center; justify-content: space-between;">
+                <div style="width: 44px; height: 44px; border-radius: var(--radius-sm); background: var(--danger-surface); color: var(--danger); display: flex; align-items: center; justify-content: center;">
+                  <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
+                </div>
+                <span class="badge badge-owe">Carryover Tracking</span>
+              </div>
+              <div>
+                <h3 style="font-size: 1.15rem; color: var(--text-primary); margin-bottom: 0.35rem;">Monthly Settlement</h3>
+                <p style="font-size: 0.88rem; color: var(--text-secondary); line-height: 1.45;">
+                  Active dues ledger showing prior-month unpaid amounts, suggested totals, typed multi-game fees, and inline instant payment recording.
+                </p>
+              </div>
+              <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; font-weight: 600; color: var(--brand); margin-top: auto;">
+                <span>Open Screen</span>
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+              </div>
+            </a>
+
+            <!-- Screen 3: People Directory -->
+            <a href="people.html" class="card" style="text-decoration: none; padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem;">
+              <div style="display: flex; align-items: center; justify-content: space-between;">
+                <div style="width: 44px; height: 44px; border-radius: var(--radius-sm); background: var(--info-surface); color: var(--info-text); display: flex; align-items: center; justify-content: center;">
+                  <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                </div>
+                <span class="badge badge-student">Directory</span>
+              </div>
+              <div>
+                <h3 style="font-size: 1.15rem; color: var(--text-primary); margin-bottom: 0.35rem;">People Directory</h3>
+                <p style="font-size: 0.88rem; color: var(--text-secondary); line-height: 1.45;">
+                  Filtered roster of Members, Coached Students, and Guests. Filter by batch, game, and active status while retaining historical records.
+                </p>
+              </div>
+              <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; font-weight: 600; color: var(--brand); margin-top: auto;">
+                <span>Open Screen</span>
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+              </div>
+            </a>
+
+            <!-- Screen 4: Person Detail & Log -->
+            <a href="person.html" class="card" style="text-decoration: none; padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem;">
+              <div style="display: flex; align-items: center; justify-content: space-between;">
+                <div style="width: 44px; height: 44px; border-radius: var(--radius-sm); background: var(--warning-surface); color: var(--warning-text); display: flex; align-items: center; justify-content: center;">
+                  <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                </div>
+                <span class="badge badge-warning">Audit Trail</span>
+              </div>
+              <div>
+                <h3 style="font-size: 1.15rem; color: var(--text-primary); margin-bottom: 0.35rem;">Member Ledger & Adjustments</h3>
+                <p style="font-size: 0.88rem; color: var(--text-secondary); line-height: 1.45;">
+                  Complete append-only audit trail. Actions for “No fee this month”, “Charge visits instead”, and setting inactive without writing off unpaid dues.
+                </p>
+              </div>
+              <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; font-weight: 600; color: var(--brand); margin-top: auto;">
+                <span>Open Screen</span>
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+              </div>
+            </a>
+
+            <!-- Screen 5: Settings -->
+            <a href="settings.html" class="card" style="text-decoration: none; padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem;">
+              <div style="display: flex; align-items: center; justify-content: space-between;">
+                <div style="width: 44px; height: 44px; border-radius: var(--radius-sm); background: var(--bg-surface-subtle); color: var(--text-primary); display: flex; align-items: center; justify-content: center;">
+                  <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                </div>
+                <span class="badge badge-sport">Pricing Matrix</span>
+              </div>
+              <div>
+                <h3 style="font-size: 1.15rem; color: var(--text-primary); margin-bottom: 0.35rem;">Rates & Configuration</h3>
+                <p style="font-size: 0.88rem; color: var(--text-secondary); line-height: 1.45;">
+                  Configure member, student, and guest rates by sport (Badminton, Tennis). Safe price propagation without overwriting frozen historic settlements.
+                </p>
+              </div>
+              <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; font-weight: 600; color: var(--brand); margin-top: auto;">
+                <span>Open Screen</span>
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+              </div>
+            </a>
+          </div>
+
+          <!-- Architecture & Domain Principles Card -->
+          <div class="card" style="padding: 1.5rem;">
+            <h3 style="font-size: 1.05rem; margin-bottom: 0.75rem;">Guaranteed Domain Rules</h3>
+            <ul style="margin: 0; padding-left: 1.25rem; color: var(--text-secondary); font-size: 0.9rem; line-height: 1.7;">
+              <li><strong>Zero Float Math:</strong> Currency values are tracked as integer minor units with strict decimal formatting.</li>
+              <li><strong>Unmarked ≠ Absent:</strong> Someone not explicitly added to a session has no mark, preventing false absenteeism.</li>
+              <li><strong>Append-Only Financial Ledger:</strong> Payments and corrections are immutable records; fixes are explicit reversals.</li>
+              <li><strong>No Presumed Multi-Sport Pricing:</strong> Rates for players in two games are explicitly typed by management, never guessed.</li>
+            </ul>
+          </div>
+        </main>
+      </div>
+
+      <!-- Mobile Bottom Dock -->
+      <nav class="mobile-dock">
+        <a class="mobile-nav-item" href="attendance.html">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+          Today
+        </a>
+        <a class="mobile-nav-item" href="settle.html">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
+          Settle
+        </a>
+        <a class="mobile-nav-item" href="people.html">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+          People
+        </a>
+        <a class="mobile-nav-item" href="settings.html">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          Settings
+        </a>
+      </nav>
+    </div>
+
+    <script>
+      function toggleTheme() {
+        const html = document.documentElement;
+        const current = html.getAttribute('data-theme');
+        const next = current === 'dark' ? 'light' : 'dark';
+        html.setAttribute('data-theme', next);
+      }
+    </script>
+  </body>
+</html>

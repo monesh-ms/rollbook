@@ -4,6 +4,27 @@ Roll Book is an attendance and payment tracker for academies. More features will
 
 Attendance and payments are the core, so they must always be correct. A wrong attendance mark or a wrong balance is worse than a missing feature.
 
+## Project memory (`.docs/`)
+
+`.docs/` is the project's memory. A new agent with no prior knowledge must be able to start from it. At the start of every session, read `.docs/README.md`, then whatever it points to for the task.
+
+Two files are fixed at the root. Everything else is yours to organize:
+
+- `README.md`: the entry point and index. Explains what the project is in a few lines, how `.docs/` is organized, and lists every file with a one-line summary in reading order.
+- `status.md`: current state, what is next, and open questions.
+
+Create whatever files and folders the project needs (decisions, context, domain rules, architecture, research, guides, or others). Choose a structure that stays easy to navigate, and keep it consistent.
+
+Keep it up to date automatically, without being asked, in the same change as the work that caused it. Record decisions and why they were made, what you learn about how the academy works, settled business rules, and changes in state. Update `README.md` whenever the structure changes. After recording, tell the owner in one line what you wrote and where.
+
+- Store the core, never the conversation. Record the outcome and why, and the alternatives rejected and why. No transcripts.
+- Record something only if a new agent would otherwise repeat the discussion or undo the decision.
+- Don't record what the code already shows: stack, dependencies, commands, file layout.
+- Update existing files instead of creating near-duplicates. Remove content that is no longer true.
+- Don't rewrite an accepted decision. To change one, record a new decision that supersedes it and mark the old one.
+- Write for a reader who has never seen this project: plain words, define terms, use absolute dates, and never write "as discussed".
+- Never store secrets or any personal data about members.
+
 ## How to work
 
 Understand first: read the task and the code it touches, and trace the real flow before changing anything.
