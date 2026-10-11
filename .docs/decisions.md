@@ -36,6 +36,23 @@ Why: the owner clarified that mobile is the primary screen. Sidebars add unneces
 
 Rejected: collapsible sidebars and multi-level date picker dialogs requiring multiple clicks.
 
+## 2026-10-11 — Database schema locked with 9 tables, direct sessionless attendance, and 3-table financial model
+
+The database schema is locked in Drizzle ORM / SQLite across 9 tables:
+1. `academies`: Tenant root with timezone and currency.
+2. `games`: Sports list and pricing tiers (member monthly, student monthly, guest visit) in integer minor units (paise).
+3. `members`: People roster with categories (`member`, `student`, `guest`), batch (`morning`, `evening`, `both`), active/inactive status, and `custom_monthly_amount` to freeze hand-typed multi-game rates.
+4. `member_games`: Many-to-many junction table for multi-sport enrollment.
+5. `member_status_logs`: History audit tracking when members switch between active and inactive with reasons.
+6. `attendance`: Flattened attendance table storing `date` and `batch` directly on the row with a compound unique index on `(academy_id, date, batch, member_id)`. No separate sessions table.
+7. `monthly_fees`: Month-end subscription records for regular members and students.
+8. `visit_charges`: On-the-spot per-visit charges for guests and short-stay students.
+9. `payments`: Immutable, append-only log of all money received (cash/UPI) with `reversal_of_id` self-referencing corrections.
+
+Why: eliminating a separate `sessions` table eliminates ceremony and extra joins, making mobile marking atomic and offline-ready. Separating `monthly_fees` from on-the-spot `visit_charges` maps directly to real-world operations where guests pay on arrival while members settle monthly.
+
+Rejected: an abstract single-ledger model using negative charges for fee waivers, and a separate `sessions` parent table.
+
 ## 2026-10-11 — The app stores fee logs; it does not invent prices
 
 Settings hold amounts the admin can change. A charge is a log of the amount actually used. Correcting a charge does not change later months; the next month follows the settings again. Payments stay append-only.

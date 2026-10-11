@@ -1,5 +1,17 @@
-import { drizzle } from 'drizzle-orm/better-sqlite3'
-
 import * as schema from './schema.ts'
 
-export const db = drizzle(process.env.DATABASE_URL!, { schema })
+const dbUrl = process.env.DATABASE_URL || 'dev.db'
+
+let dbInstance: any
+
+if (typeof Bun !== 'undefined') {
+  const { Database } = await import('bun:sqlite')
+  const { drizzle } = await import('drizzle-orm/bun-sqlite')
+  const sqlite = new Database(dbUrl)
+  dbInstance = drizzle(sqlite, { schema })
+} else {
+  const { drizzle } = await import('drizzle-orm/better-sqlite3')
+  dbInstance = drizzle(dbUrl, { schema })
+}
+
+export const db = dbInstance
