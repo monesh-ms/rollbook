@@ -2,7 +2,7 @@
 <html lang="en" data-theme="light">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>Academy Settings & Rates · Roll Book</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -13,232 +13,127 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <div class="app-layout">
-      <!-- Desktop Sidebar -->
-      <aside class="app-sidebar">
-        <div class="sidebar-header">
-          <div class="brand-badge">R</div>
-          <div class="brand-meta">
-            <span class="brand-title">Roll Book</span>
-            <span class="brand-subtitle">MS Sports Academy</span>
+    <div class="mobile-shell">
+      <!-- Top Mobile Header -->
+      <header class="app-header">
+        <div class="header-brand">
+          <div class="brand-icon">R</div>
+          <div class="brand-info">
+            <span class="brand-name">Roll Book</span>
+            <span class="brand-sub">Settings & Rates</span>
           </div>
         </div>
-        <nav class="sidebar-nav">
-          <a class="nav-link" href="index.html">
-            <svg fill="none" viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-            Overview
-          </a>
-          <a class="nav-link" href="attendance.html">
-            <svg fill="none" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/><path d="m9 16 2 2 4-4"/></svg>
-            Today's Attendance
-          </a>
-          <a class="nav-link" href="settle.html">
-            <svg fill="none" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
-            Monthly Settle
-          </a>
-          <a class="nav-link" href="people.html">
-            <svg fill="none" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-            People Directory
-          </a>
-          <a class="nav-link active" href="settings.html">
-            <svg fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-            Settings & Rates
-          </a>
-        </nav>
-        <div class="sidebar-footer">
-          <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 550;">Management</span>
-          <button class="theme-toggle" onclick="toggleTheme()">
-            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
-            <span>Theme</span>
+        <div class="header-actions">
+          <button class="btn btn-primary btn-sm" onclick="showToast('Saved settings!')">Save</button>
+          <button class="theme-toggle-btn" onclick="toggleTheme()" title="Toggle Dark/Light">
+            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
           </button>
         </div>
-      </aside>
+      </header>
 
-      <!-- Main Shell -->
-      <div class="app-main">
-        <header class="app-topbar">
-          <div class="topbar-left">
-            <div class="topbar-breadcrumb">
-              <span>Roll Book</span>
-              <span>/</span>
-              <span class="current">Settings & Rates</span>
-            </div>
+      <main class="mobile-content">
+        <!-- Academy Tenant Profile Card -->
+        <div class="m-card">
+          <div class="m-card-header">
+            <span class="m-card-title">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 21h18M9 8h1M9 12h1M9 16h1M14 8h1M14 12h1M14 16h1M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16"/></svg>
+              <span>Academy Tenant Profile</span>
+            </span>
+            <span class="badge badge-settled">Config</span>
           </div>
-          <div class="topbar-right">
-            <button class="btn btn-primary btn-sm" onclick="saveAllSettings()">
-              Save Changes
-            </button>
-          </div>
-        </header>
-
-        <main class="app-content">
-          <div class="page-header">
-            <div class="page-title-wrap">
-              <div style="display: flex; align-items: center; gap: 0.75rem;">
-                <h1>Academy Settings & Rate Matrix</h1>
-                <span class="badge badge-settled">Config Driven</span>
-              </div>
-              <p class="page-subtitle">
-                Configure tenant parameters and sport pricing tiers. Price changes immediately apply to all unsettled suggestions, while historical settled months remain untouched.
-              </p>
-            </div>
-          </div>
-
-          <!-- Section 1: Tenant Information -->
-          <div class="card" style="margin-bottom: 2rem;">
-            <div class="card-header">
-              <div class="card-title">
-                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 21h18M9 8h1M9 12h1M9 16h1M14 8h1M14 12h1M14 16h1M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16"/></svg>
-                <span>Academy Tenant Profile</span>
-              </div>
-              <span class="stat-meta">Multi-Tenant Capable</span>
-            </div>
-            <div class="card-body">
-              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem;">
-                <div class="input-group">
-                  <label class="input-label">Academy Display Name</label>
-                  <input class="input-text" id="academyName" value="MS Sports Academy" />
-                  <span style="font-size: 0.75rem; color: var(--text-muted);">The first tenant; product is fully generic.</span>
-                </div>
-                <div class="input-group">
-                  <label class="input-label">Local Calendar Timezone</label>
-                  <input class="input-text" id="academyTimezone" value="Asia/Kolkata" />
-                  <span style="font-size: 0.75rem; color: var(--text-muted);">Session dates match academy local date, never UTC.</span>
-                </div>
-                <div class="input-group">
-                  <label class="input-label">Default Currency</label>
-                  <input class="input-text" id="academyCurrency" value="INR (₹)" />
-                  <span style="font-size: 0.75rem; color: var(--text-muted);">Stored as minor units; never floating point.</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Section 2: Sport Pricing Matrix -->
-          <div style="margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between;">
+          <div style="padding: 1rem; display: flex; flex-direction: column; gap: 0.85rem;">
             <div>
-              <h2>Configured Sport Pricing Tiers</h2>
-              <p style="font-size: 0.88rem; color: var(--text-secondary); margin-top: 0.2rem;">
-                Monthly fee for regular members & students; per-visit charge for guest attendees.
-              </p>
+              <label style="font-size: 0.78rem; font-weight: 600; color: var(--text-secondary);">Tenant Display Name</label>
+              <input class="search-input" value="MS Sports Academy" style="margin-top: 0.25rem;" />
             </div>
-            <button class="btn btn-secondary btn-sm" onclick="addNewSportCard()">
-              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" x2="12" y1="5" y2="19"/><line x1="5" x2="19" y1="12" y2="12"/></svg>
-              Add New Sport
-            </button>
-          </div>
-
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;" id="sportsGrid">
-            
-            <!-- Sport Card 1: Badminton -->
-            <div class="card">
-              <div class="card-header" style="background-color: #ecfeff; border-bottom-color: #a5f3fc;">
-                <div class="card-title" style="color: #0891b2;">
-                  <span style="font-size: 1.25rem;">🏸</span>
-                  <span>Badminton</span>
-                </div>
-                <span class="badge badge-sport">Sport #1</span>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem;">
+              <div>
+                <label style="font-size: 0.78rem; font-weight: 600; color: var(--text-secondary);">Calendar Timezone</label>
+                <input class="search-input" value="Asia/Kolkata" style="margin-top: 0.25rem;" />
               </div>
-              <div class="card-body" style="display: flex; flex-direction: column; gap: 1rem;">
-                <div class="input-group">
-                  <label class="input-label">Member Monthly Fee (Regular)</label>
-                  <div class="input-money-wrap">
-                    <span class="input-money-prefix">₹</span>
-                    <input class="input-text input-money" value="3,000" id="badmintonMemberFee" />
-                  </div>
-                </div>
-                <div class="input-group">
-                  <label class="input-label">Student Monthly Fee (Coaching)</label>
-                  <div class="input-money-wrap">
-                    <span class="input-money-prefix">₹</span>
-                    <input class="input-text input-money" value="2,000" id="badmintonStudentFee" />
-                  </div>
-                </div>
-                <div class="input-group">
-                  <label class="input-label">Guest Per-Visit Charge</label>
-                  <div class="input-money-wrap">
-                    <span class="input-money-prefix">₹</span>
-                    <input class="input-text input-money" value="400" id="badmintonGuestFee" />
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Sport Card 2: Tennis -->
-            <div class="card">
-              <div class="card-header" style="background-color: #fefce8; border-bottom-color: #fef08a;">
-                <div class="card-title" style="color: #ca8a04;">
-                  <span style="font-size: 1.25rem;">🎾</span>
-                  <span>Tennis</span>
-                </div>
-                <span class="badge badge-sport">Sport #2</span>
-              </div>
-              <div class="card-body" style="display: flex; flex-direction: column; gap: 1rem;">
-                <div class="input-group">
-                  <label class="input-label">Member Monthly Fee (Regular)</label>
-                  <div class="input-money-wrap">
-                    <span class="input-money-prefix">₹</span>
-                    <input class="input-text input-money" value="4,500" id="tennisMemberFee" />
-                  </div>
-                </div>
-                <div class="input-group">
-                  <label class="input-label">Student Monthly Fee (Coaching)</label>
-                  <div class="input-money-wrap">
-                    <span class="input-money-prefix">₹</span>
-                    <input class="input-text input-money" value="3,500" id="tennisStudentFee" />
-                  </div>
-                </div>
-                <div class="input-group">
-                  <label class="input-label">Guest Per-Visit Charge</label>
-                  <div class="input-money-wrap">
-                    <span class="input-money-prefix">₹</span>
-                    <input class="input-text input-money" value="700" id="tennisGuestFee" />
-                  </div>
-                </div>
-              </div>
-            </div>
-
-          </div>
-
-          <!-- Propagation Safety Rules -->
-          <div class="card" style="padding: 1.5rem; background: var(--bg-surface-subtle);">
-            <div style="display: flex; gap: 1rem; align-items: flex-start;">
-              <div style="color: var(--brand); padding-top: 2px;">
-                <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="16" y2="12"/><line x1="12" x2="12.01" y1="8" y2="8"/></svg>
-              </div>
-              <div style="display: flex; flex-direction: column; gap: 0.35rem; font-size: 0.88rem; color: var(--text-secondary); line-height: 1.55;">
-                <strong style="color: var(--text-primary);">How Price Changes Are Handled in Roll Book:</strong>
-                <span>• Raising or lowering a cost updates every unsettled suggestion using that type and sport (including the ongoing calendar month if not yet settled).</span>
-                <span>• Settled months preserve the historical settled amount indefinitely.</span>
-                <span>• Hand-typed custom fees for multiple games are protected and never overwritten.</span>
+              <div>
+                <label style="font-size: 0.78rem; font-weight: 600; color: var(--text-secondary);">Currency</label>
+                <input class="search-input" value="INR (₹)" style="margin-top: 0.25rem;" />
               </div>
             </div>
           </div>
-        </main>
-      </div>
+        </div>
 
-      <!-- Mobile Bottom Dock -->
-      <nav class="mobile-dock">
-        <a class="mobile-nav-item" href="attendance.html">
-          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
-          Today
+        <!-- Sport Pricing Matrix -->
+        <div class="m-card">
+          <div class="m-card-header">
+            <span class="m-card-title">
+              <span>🏸</span> Badminton Pricing Matrix
+            </span>
+            <span class="badge badge-sport">Sport #1</span>
+          </div>
+          <div style="padding: 1rem; display: flex; flex-direction: column; gap: 0.75rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-size: 0.88rem; font-weight: 600;">Member Monthly</span>
+              <input class="search-input mono-num" value="₹3,000" style="width: 100px; text-align: right; height: 34px; font-weight: 700;" />
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-size: 0.88rem; font-weight: 600;">Student Monthly (Coached)</span>
+              <input class="search-input mono-num" value="₹2,000" style="width: 100px; text-align: right; height: 34px; font-weight: 700;" />
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-size: 0.88rem; font-weight: 600;">Guest Per-Visit Charge</span>
+              <input class="search-input mono-num" value="₹400" style="width: 100px; text-align: right; height: 34px; font-weight: 700;" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Tennis Pricing Matrix -->
+        <div class="m-card">
+          <div class="m-card-header">
+            <span class="m-card-title">
+              <span>🎾</span> Tennis Pricing Matrix
+            </span>
+            <span class="badge badge-sport">Sport #2</span>
+          </div>
+          <div style="padding: 1rem; display: flex; flex-direction: column; gap: 0.75rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-size: 0.88rem; font-weight: 600;">Member Monthly</span>
+              <input class="search-input mono-num" value="₹4,500" style="width: 100px; text-align: right; height: 34px; font-weight: 700;" />
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-size: 0.88rem; font-weight: 600;">Student Monthly (Coached)</span>
+              <input class="search-input mono-num" value="₹3,500" style="width: 100px; text-align: right; height: 34px; font-weight: 700;" />
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-size: 0.88rem; font-weight: 600;">Guest Per-Visit Charge</span>
+              <input class="search-input mono-num" value="₹700" style="width: 100px; text-align: right; height: 34px; font-weight: 700;" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Price Change Rule Note -->
+        <div class="m-card" style="padding: 0.85rem 1rem; background: var(--bg-surface-subtle); font-size: 0.78rem; color: var(--text-secondary); line-height: 1.45;">
+          <strong>Price Update Propagation:</strong> Raising a cost immediately recalculates all open/unsettled month suggestions. Settled past records and custom hand-typed fees remain frozen.
+        </div>
+      </main>
+
+      <!-- Permanent Bottom Tab Bar -->
+      <nav class="bottom-tab-bar" aria-label="Main Navigation">
+        <a class="tab-item" href="attendance.html">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/><path d="m9 16 2 2 4-4"/></svg>
+          <span>Attendance</span>
         </a>
-        <a class="mobile-nav-item" href="settle.html">
-          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
-          Settle
+        <a class="tab-item" href="settle.html">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
+          <span>Settle</span>
         </a>
-        <a class="mobile-nav-item" href="people.html">
-          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
-          People
+        <a class="tab-item" href="people.html">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          <span>People</span>
         </a>
-        <a class="mobile-nav-item active" href="settings.html">
-          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-          Settings
+        <a class="tab-item is-active" href="settings.html">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          <span>Settings</span>
         </a>
       </nav>
     </div>
 
-    <!-- Toast Container -->
     <div class="toast-container" id="toastContainer"></div>
 
     <script>
@@ -255,54 +150,7 @@
         toast.className = 'toast';
         toast.innerHTML = `<span>✓</span><span>${msg}</span>`;
         container.appendChild(toast);
-        setTimeout(() => toast.remove(), 2600);
-      }
-
-      function saveAllSettings() {
-        showToast('Settings & sport rate matrix saved successfully');
-      }
-
-      function addNewSportCard() {
-        const sportName = prompt('Enter sport name (e.g. Squash, Table Tennis):');
-        if (!sportName) return;
-
-        const grid = document.getElementById('sportsGrid');
-        const card = document.createElement('div');
-        card.className = 'card';
-        card.innerHTML = `
-          <div class="card-header" style="background-color: var(--brand-surface); border-bottom-color: var(--brand-border);">
-            <div class="card-title" style="color: var(--brand-text);">
-              <span style="font-size: 1.25rem;">🏅</span>
-              <span>${sportName}</span>
-            </div>
-            <span class="badge badge-sport">Custom Sport</span>
-          </div>
-          <div class="card-body" style="display: flex; flex-direction: column; gap: 1rem;">
-            <div class="input-group">
-              <label class="input-label">Member Monthly Fee</label>
-              <div class="input-money-wrap">
-                <span class="input-money-prefix">₹</span>
-                <input class="input-text input-money" value="3,500" />
-              </div>
-            </div>
-            <div class="input-group">
-              <label class="input-label">Student Monthly Fee</label>
-              <div class="input-money-wrap">
-                <span class="input-money-prefix">₹</span>
-                <input class="input-text input-money" value="2,500" />
-              </div>
-            </div>
-            <div class="input-group">
-              <label class="input-label">Guest Per-Visit Charge</label>
-              <div class="input-money-wrap">
-                <span class="input-money-prefix">₹</span>
-                <input class="input-text input-money" value="500" />
-              </div>
-            </div>
-          </div>
-        `;
-        grid.appendChild(card);
-        showToast(`Added sport: ${sportName}`);
+        setTimeout(() => toast.remove(), 2400);
       }
     </script>
   </body>

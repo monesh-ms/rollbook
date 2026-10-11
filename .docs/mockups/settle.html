@@ -2,7 +2,7 @@
 <html lang="en" data-theme="light">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>Monthly Settlement · Roll Book</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -13,297 +13,244 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <div class="app-layout">
-      <!-- Desktop Sidebar -->
-      <aside class="app-sidebar">
-        <div class="sidebar-header">
-          <div class="brand-badge">R</div>
-          <div class="brand-meta">
-            <span class="brand-title">Roll Book</span>
-            <span class="brand-subtitle">MS Sports Academy</span>
+    <div class="mobile-shell">
+      <!-- Top Mobile Header -->
+      <header class="app-header">
+        <div class="header-brand">
+          <div class="brand-icon">R</div>
+          <div class="brand-info">
+            <span class="brand-name">Roll Book</span>
+            <span class="brand-sub">MS Sports Academy</span>
           </div>
         </div>
-        <nav class="sidebar-nav">
-          <a class="nav-link" href="index.html">
-            <svg fill="none" viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-            Overview
-          </a>
-          <a class="nav-link" href="attendance.html">
-            <svg fill="none" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/><path d="m9 16 2 2 4-4"/></svg>
-            Today's Attendance
-          </a>
-          <a class="nav-link active" href="settle.html">
-            <svg fill="none" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
-            Monthly Settle
-          </a>
-          <a class="nav-link" href="people.html">
-            <svg fill="none" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-            People Directory
-          </a>
-          <a class="nav-link" href="settings.html">
-            <svg fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-            Settings & Rates
-          </a>
-        </nav>
-        <div class="sidebar-footer">
-          <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 550;">Management</span>
-          <button class="theme-toggle" onclick="toggleTheme()">
-            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
-            <span>Theme</span>
+        <div class="header-actions">
+          <button class="theme-toggle-btn" onclick="toggleTheme()" title="Toggle Dark/Light">
+            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
           </button>
         </div>
-      </aside>
+      </header>
 
-      <!-- Main Shell -->
-      <div class="app-main">
-        <header class="app-topbar">
-          <div class="topbar-left">
-            <div class="topbar-breadcrumb">
-              <span>Roll Book</span>
-              <span>/</span>
-              <span class="current">Settle Dues</span>
-            </div>
-          </div>
-          <div class="topbar-right">
-            <span class="badge badge-owe" id="unsettledPill">4 Accounts Pending</span>
-          </div>
-        </header>
-
-        <main class="app-content">
-          <div class="page-header">
-            <div class="page-title-wrap">
-              <div style="display: flex; align-items: center; gap: 0.75rem;">
-                <h1>October 2026 Settlement</h1>
-                <span class="badge badge-sport">Currency: INR (₹)</span>
-              </div>
-              <p class="page-subtitle">
-                Members and regular students due for monthly payment. Unsettled amounts roll over automatically. Guests are charged per visit and do not appear on this list.
-              </p>
-            </div>
-          </div>
-
-          <!-- Financial Snapshot Bar -->
-          <div class="stat-grid">
-            <div class="stat-tile">
-              <span class="stat-label">Pending Accounts</span>
-              <span class="stat-value mono-num" id="unsettledCount" style="color: var(--danger);">4</span>
-              <span class="stat-meta">Awaiting full payment</span>
-            </div>
-            <div class="stat-tile">
-              <span class="stat-label">Total Outstanding</span>
-              <span class="stat-value mono-num" id="totalOwed">₹14,500</span>
-              <span class="stat-meta">Includes current + overdue</span>
-            </div>
-            <div class="stat-tile">
-              <span class="stat-label">Arrears Carryover</span>
-              <span class="stat-value mono-num" style="color: var(--warning-text);">₹2,500</span>
-              <span class="stat-meta">Unpaid from September</span>
-            </div>
-          </div>
-
-          <!-- Filter & View Controls -->
-          <div class="filter-bar">
-            <button class="filter-pill active" onclick="filterSettle(this, 'all')">All Unsettled (4)</button>
-            <button class="filter-pill" onclick="filterSettle(this, 'arrears')">With Prior Arrears (2)</button>
-            <button class="filter-pill" onclick="filterSettle(this, 'students')">Students Only</button>
-            <button class="filter-pill" onclick="filterSettle(this, 'members')">Members Only</button>
-          </div>
-
-          <!-- Settle Roster Card -->
-          <div class="card">
-            <div class="card-header">
-              <div class="card-title">
-                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-                <span>Due Accounts</span>
-              </div>
-              <span class="stat-meta">Exact Minor Unit Tracking</span>
-            </div>
-            <div class="card-body" style="padding: 0;">
-              <div class="roster-list" id="settleList">
-                
-                <!-- Account 1: Asha Iyer (Has Prior Debt + Inactive Hint) -->
-                <div class="roster-row has-owe" data-category="student" data-arrears="true">
-                  <div class="roster-info">
-                    <div class="avatar-initial sport-badminton">AI</div>
-                    <div class="person-details">
-                      <div class="person-name">
-                        <a href="person.html" style="color: inherit;">Asha Iyer</a>
-                        <span class="badge badge-student">Student</span>
-                        <span class="badge badge-owe">Sep Carryover</span>
-                      </div>
-                      <div class="person-meta">
-                        <span class="badge badge-sport">Badminton</span>
-                        <span>•</span>
-                        <span>Morning batch</span>
-                      </div>
-                      <div style="display: flex; flex-direction: column; gap: 0.2rem; margin-top: 0.4rem;">
-                        <span style="font-size: 0.82rem; font-weight: 600; color: var(--danger-text);">
-                          September still open: ₹1,000 + October fee: ₹2,000
-                        </span>
-                        <span style="font-size: 0.78rem; color: var(--text-muted);">
-                          Notice: No attendance recorded this month. (Attendance does not auto-alter fee)
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                  <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 0.6rem;">
-                    <div class="settle-amount-col">
-                      <span class="amount-main">₹3,000</span>
-                      <span class="amount-sub">Suggested Total</span>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; justify-content: flex-end;">
-                      <div class="input-money-wrap">
-                        <span class="input-money-prefix">₹</span>
-                        <input class="input-text input-money" type="text" value="3,000" style="width: 110px;" id="payInput_Asha" />
-                      </div>
-                      <button class="btn btn-primary btn-sm" onclick="savePayment(this, 'Asha Iyer', 3000)">
-                        Save Payment
-                      </button>
-                      <a class="btn btn-secondary btn-sm" href="person.html">
-                        Adjust Month
-                      </a>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Account 2: Dev Shah (Regular Single Game Member) -->
-                <div class="roster-row" data-category="member" data-arrears="false">
-                  <div class="roster-info">
-                    <div class="avatar-initial sport-tennis">DS</div>
-                    <div class="person-details">
-                      <div class="person-name">
-                        <a href="person.html" style="color: inherit;">Dev Shah</a>
-                        <span class="badge badge-member">Member</span>
-                      </div>
-                      <div class="person-meta">
-                        <span class="badge badge-sport">Tennis</span>
-                        <span>•</span>
-                        <span>Evening regular</span>
-                      </div>
-                      <span style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.25rem;">
-                        Standard monthly tennis fee
-                      </span>
-                    </div>
-                  </div>
-                  <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 0.6rem;">
-                    <div class="settle-amount-col">
-                      <span class="amount-main">₹4,500</span>
-                      <span class="amount-sub">October Fee</span>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 0.5rem;">
-                      <div class="input-money-wrap">
-                        <span class="input-money-prefix">₹</span>
-                        <input class="input-text input-money" type="text" value="4,500" style="width: 110px;" />
-                      </div>
-                      <button class="btn btn-primary btn-sm" onclick="savePayment(this, 'Dev Shah', 4500)">
-                        Save Payment
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Account 3: Meera Nair (Hand-typed Multi-game Student) -->
-                <div class="roster-row" data-category="student" data-arrears="false">
-                  <div class="roster-info">
-                    <div class="avatar-initial sport-badminton">MN</div>
-                    <div class="person-details">
-                      <div class="person-name">
-                        <a href="person.html" style="color: inherit;">Meera Nair</a>
-                        <span class="badge badge-student">Student</span>
-                        <span class="badge badge-warning">Hand-Typed Rate</span>
-                      </div>
-                      <div class="person-meta">
-                        <span class="badge badge-sport">Tennis & Badminton</span>
-                        <span>•</span>
-                        <span>Morning & Evening</span>
-                      </div>
-                      <span style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.25rem;">
-                        Multi-game player: hand-typed rate will not be overwritten by settings cost changes
-                      </span>
-                    </div>
-                  </div>
-                  <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 0.6rem;">
-                    <div class="settle-amount-col">
-                      <span class="amount-main">₹5,500</span>
-                      <span class="amount-sub">Custom Total</span>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 0.5rem;">
-                      <div class="input-money-wrap">
-                        <span class="input-money-prefix">₹</span>
-                        <input class="input-text input-money" type="text" value="5,500" style="width: 110px;" />
-                      </div>
-                      <button class="btn btn-primary btn-sm" onclick="savePayment(this, 'Meera Nair', 5500)">
-                        Save Payment
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Account 4: Ravi Menon (Inactive Member with Prior Unpaid Debt) -->
-                <div class="roster-row has-owe" data-category="member" data-arrears="true">
-                  <div class="roster-info">
-                    <div class="avatar-initial sport-badminton">RM</div>
-                    <div class="person-details">
-                      <div class="person-name">
-                        <a href="person.html" style="color: inherit;">Ravi Menon</a>
-                        <span class="badge badge-inactive">Inactive</span>
-                        <span class="badge badge-owe">Prior Arrears</span>
-                      </div>
-                      <div class="person-meta">
-                        <span class="badge badge-sport">Badminton</span>
-                        <span>•</span>
-                        <span>Status: Inactive</span>
-                      </div>
-                      <span style="font-size: 0.82rem; font-weight: 600; color: var(--danger-text); margin-top: 0.25rem;">
-                        No October fee. September still open: ₹1,500
-                      </span>
-                    </div>
-                  </div>
-                  <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 0.6rem;">
-                    <div class="settle-amount-col">
-                      <span class="amount-main">₹1,500</span>
-                      <span class="amount-sub">Prior Debt Only</span>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 0.5rem;">
-                      <div class="input-money-wrap">
-                        <span class="input-money-prefix">₹</span>
-                        <input class="input-text input-money" type="text" value="1,500" style="width: 110px;" />
-                      </div>
-                      <button class="btn btn-primary btn-sm" onclick="savePayment(this, 'Ravi Menon', 1500)">
-                        Save Payment
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-              </div>
-            </div>
-          </div>
-        </main>
+      <!-- 1. Month-Level Filter by Default -->
+      <div class="month-selector-bar">
+        <div class="month-stepper">
+          <button type="button" onclick="stepMonth(-1)" aria-label="Previous Month">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg>
+          </button>
+          <span class="month-label" id="settleMonthLabel">October 2026</span>
+          <button type="button" onclick="stepMonth(1)" aria-label="Next Month">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+          </button>
+        </div>
+        <span class="badge badge-owe" id="unsettledPill">4 Accounts Due</span>
       </div>
 
-      <!-- Mobile Bottom Dock -->
-      <nav class="mobile-dock">
-        <a class="mobile-nav-item" href="attendance.html">
-          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
-          Today
+      <!-- Quick Search Bar -->
+      <div class="search-container">
+        <div class="search-box">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <input
+            type="search"
+            class="search-input"
+            id="settleSearch"
+            placeholder="Search unsettled member by name..."
+            autocomplete="off"
+            oninput="filterSettleSearch(this.value)"
+          />
+        </div>
+      </div>
+
+      <!-- Quick Filter Pills -->
+      <div style="padding: 0.5rem 1rem 0; display: flex; gap: 0.4rem; overflow-x: auto;">
+        <button class="btn btn-secondary btn-sm" id="pillAll" style="border-radius: var(--radius-full); font-weight: 700; background: var(--text-primary); color: var(--text-inverse); border-color: var(--text-primary);" onclick="filterSettleCategory('all')">
+          All Due (4)
+        </button>
+        <button class="btn btn-secondary btn-sm" id="pillArrears" style="border-radius: var(--radius-full);" onclick="filterSettleCategory('arrears')">
+          Prior Debt (2)
+        </button>
+        <button class="btn btn-secondary btn-sm" id="pillStudents" style="border-radius: var(--radius-full);" onclick="filterSettleCategory('students')">
+          Students (2)
+        </button>
+        <button class="btn btn-secondary btn-sm" id="pillMembers" style="border-radius: var(--radius-full);" onclick="filterSettleCategory('members')">
+          Members (2)
+        </button>
+      </div>
+
+      <!-- Content Area -->
+      <main class="mobile-content">
+        <!-- Monthly Financial Total Tile -->
+        <div class="m-card" style="padding: 1rem 1.15rem; background: linear-gradient(180deg, var(--bg-surface) 0%, var(--bg-surface-subtle) 100%);">
+          <div style="display: flex; align-items: flex-start; justify-content: space-between;">
+            <div>
+              <span style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.04em;">
+                Total Due for <span id="summaryMonthName">October</span>
+              </span>
+              <div style="font-size: 1.7rem; font-weight: 800; font-family: var(--font-mono); color: var(--danger-text); margin-top: 0.15rem;" id="totalDueText">
+                ₹14,500
+              </div>
+            </div>
+            <div style="text-align: right;">
+              <span style="font-size: 0.72rem; color: var(--text-muted);">Prior Carryover:</span>
+              <div style="font-size: 0.95rem; font-weight: 700; font-family: var(--font-mono); color: var(--warning-text);">
+                ₹2,500
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Settle Account List -->
+        <div class="m-card" style="overflow: hidden;">
+          <div class="m-card-header">
+            <span class="m-card-title">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
+              <span>Settlement Accounts</span>
+            </span>
+            <span style="font-size: 0.75rem; color: var(--text-muted);">Guests excluded</span>
+          </div>
+
+          <div id="settleList">
+            
+            <!-- Account 1: Asha Iyer (Arrears + No attendance hint) -->
+            <div class="settle-card-row is-arrears" data-cat="students" data-arrears="true" data-name="asha iyer badminton student">
+              <div class="settle-top-info">
+                <div style="display: flex; gap: 0.65rem; min-width: 0;">
+                  <div class="att-avatar" style="background-color: #ecfeff; color: #0891b2; border-color: #a5f3fc;">AI</div>
+                  <div>
+                    <a href="person.html" style="font-weight: 700; font-size: 0.98rem; color: var(--text-primary); text-decoration: none;">Asha Iyer</a>
+                    <div style="display: flex; gap: 0.3rem; margin-top: 2px;">
+                      <span class="badge badge-student">Student</span>
+                      <span class="badge badge-sport">Badminton</span>
+                      <span class="badge badge-owe">Carryover</span>
+                    </div>
+                  </div>
+                </div>
+                <div style="text-align: right;">
+                  <div style="font-size: 1.25rem; font-weight: 800; font-family: var(--font-mono); color: var(--danger-text);">₹3,000</div>
+                  <span style="font-size: 0.72rem; color: var(--text-muted);">Suggested</span>
+                </div>
+              </div>
+
+              <div style="font-size: 0.78rem; line-height: 1.4; color: var(--text-secondary); background: rgba(0,0,0,0.02); padding: 0.4rem 0.6rem; border-radius: var(--radius-xs);">
+                <span style="color: var(--danger-text); font-weight: 600;">Sep unpaid: ₹1,000</span> + Oct fee: ₹2,000<br />
+                <span style="color: var(--text-muted);">Notice: No attendance marks recorded this month.</span>
+              </div>
+
+              <div class="settle-bottom-action">
+                <a href="person.html" style="font-size: 0.8rem; font-weight: 600; color: var(--brand); text-decoration: none;">
+                  Adjust / Waive Fee →
+                </a>
+                <button class="btn btn-primary btn-sm" onclick="quickSettle(this, 'Asha Iyer', 3000)">
+                  ✓ Collect ₹3,000
+                </button>
+              </div>
+            </div>
+
+            <!-- Account 2: Dev Shah -->
+            <div class="settle-card-row" data-cat="members" data-arrears="false" data-name="dev shah tennis member">
+              <div class="settle-top-info">
+                <div style="display: flex; gap: 0.65rem; min-width: 0;">
+                  <div class="att-avatar" style="background-color: #fefce8; color: #ca8a04; border-color: #fef08a;">DS</div>
+                  <div>
+                    <a href="person.html" style="font-weight: 700; font-size: 0.98rem; color: var(--text-primary); text-decoration: none;">Dev Shah</a>
+                    <div style="display: flex; gap: 0.3rem; margin-top: 2px;">
+                      <span class="badge badge-member">Member</span>
+                      <span class="badge badge-sport">Tennis</span>
+                    </div>
+                  </div>
+                </div>
+                <div style="text-align: right;">
+                  <div style="font-size: 1.25rem; font-weight: 800; font-family: var(--font-mono); color: var(--text-primary);">₹4,500</div>
+                  <span style="font-size: 0.72rem; color: var(--text-muted);">October Regular</span>
+                </div>
+              </div>
+
+              <div class="settle-bottom-action">
+                <span style="font-size: 0.76rem; color: var(--text-muted);">Regular tennis monthly membership</span>
+                <button class="btn btn-primary btn-sm" onclick="quickSettle(this, 'Dev Shah', 4500)">
+                  ✓ Collect ₹4,500
+                </button>
+              </div>
+            </div>
+
+            <!-- Account 3: Meera Nair (Hand-typed 2 Games) -->
+            <div class="settle-card-row" data-cat="students" data-arrears="false" data-name="meera nair tennis badminton student">
+              <div class="settle-top-info">
+                <div style="display: flex; gap: 0.65rem; min-width: 0;">
+                  <div class="att-avatar" style="background-color: #ecfeff; color: #0891b2; border-color: #a5f3fc;">MN</div>
+                  <div>
+                    <a href="person.html" style="font-weight: 700; font-size: 0.98rem; color: var(--text-primary); text-decoration: none;">Meera Nair</a>
+                    <div style="display: flex; gap: 0.3rem; margin-top: 2px;">
+                      <span class="badge badge-student">Student</span>
+                      <span class="badge badge-warning">2 Games (Typed)</span>
+                    </div>
+                  </div>
+                </div>
+                <div style="text-align: right;">
+                  <div style="font-size: 1.25rem; font-weight: 800; font-family: var(--font-mono); color: var(--text-primary);">₹5,500</div>
+                  <span style="font-size: 0.72rem; color: var(--text-muted);">Hand-typed</span>
+                </div>
+              </div>
+
+              <div class="settle-bottom-action">
+                <span style="font-size: 0.76rem; color: var(--text-muted);">Multi-game typed fee; safe from rate changes</span>
+                <button class="btn btn-primary btn-sm" onclick="quickSettle(this, 'Meera Nair', 5500)">
+                  ✓ Collect ₹5,500
+                </button>
+              </div>
+            </div>
+
+            <!-- Account 4: Ravi Menon (Inactive with Sep debt) -->
+            <div class="settle-card-row is-arrears" data-cat="members" data-arrears="true" data-name="ravi menon badminton member inactive">
+              <div class="settle-top-info">
+                <div style="display: flex; gap: 0.65rem; min-width: 0;">
+                  <div class="att-avatar" style="background-color: #f1f5f9; color: #64748b; border-color: #cbd5e1;">RM</div>
+                  <div>
+                    <a href="person.html" style="font-weight: 700; font-size: 0.98rem; color: var(--text-primary); text-decoration: none;">Ravi Menon</a>
+                    <div style="display: flex; gap: 0.3rem; margin-top: 2px;">
+                      <span class="badge badge-sport" style="background: var(--bg-surface-subtle); color: var(--text-muted);">Inactive</span>
+                      <span class="badge badge-owe">Prior Arrears</span>
+                    </div>
+                  </div>
+                </div>
+                <div style="text-align: right;">
+                  <div style="font-size: 1.25rem; font-weight: 800; font-family: var(--font-mono); color: var(--danger-text);">₹1,500</div>
+                  <span style="font-size: 0.72rem; color: var(--text-muted);">Sep Debt Only</span>
+                </div>
+              </div>
+
+              <div class="settle-bottom-action">
+                <span style="font-size: 0.76rem; color: var(--danger-text); font-weight: 600;">No October fee generated. Sep unpaid: ₹1,500</span>
+                <button class="btn btn-primary btn-sm" onclick="quickSettle(this, 'Ravi Menon', 1500)">
+                  ✓ Collect ₹1,500
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </main>
+
+      <!-- Permanent Bottom Tab Bar -->
+      <nav class="bottom-tab-bar" aria-label="Main Navigation">
+        <a class="tab-item" href="attendance.html">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/><path d="m9 16 2 2 4-4"/></svg>
+          <span>Attendance</span>
         </a>
-        <a class="mobile-nav-item active" href="settle.html">
-          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
-          Settle
+        <a class="tab-item is-active" href="settle.html">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
+          <span>Settle</span>
         </a>
-        <a class="mobile-nav-item" href="people.html">
-          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
-          People
+        <a class="tab-item" href="people.html">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          <span>People</span>
         </a>
-        <a class="mobile-nav-item" href="settings.html">
-          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-          Settings
+        <a class="tab-item" href="settings.html">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          <span>Settings</span>
         </a>
       </nav>
     </div>
 
-    <!-- Toast Container -->
+    <!-- Toast Notification Container -->
     <div class="toast-container" id="toastContainer"></div>
 
     <script>
@@ -320,46 +267,80 @@
         toast.className = 'toast';
         toast.innerHTML = `<span>✓</span><span>${msg}</span>`;
         container.appendChild(toast);
-        setTimeout(() => toast.remove(), 2600);
+        setTimeout(() => toast.remove(), 2400);
       }
 
-      let remainingAccounts = 4;
-      let totalDue = 14500;
+      const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+      let currentMonthIdx = 9; // October
+      let currentYear = 2026;
 
-      function savePayment(button, name, amount) {
-        const row = button.closest('.roster-row');
-        row.style.opacity = '0.5';
-        row.style.pointerEvents = 'none';
-        row.classList.remove('has-owe');
-
-        remainingAccounts = Math.max(0, remainingAccounts - 1);
-        totalDue = Math.max(0, totalDue - amount);
-
-        document.getElementById('unsettledCount').innerText = remainingAccounts;
-        document.getElementById('unsettledPill').innerText = `${remainingAccounts} Accounts Pending`;
-        document.getElementById('totalOwed').innerText = `₹${totalDue.toLocaleString('en-IN')}`;
-
-        button.innerText = 'Settled ✓';
-        button.className = 'btn btn-subtle btn-sm';
-        showToast(`Saved payment: ₹${amount.toLocaleString('en-IN')} from ${name}`);
+      function stepMonth(delta) {
+        currentMonthIdx += delta;
+        if (currentMonthIdx < 0) {
+          currentMonthIdx = 11;
+          currentYear--;
+        } else if (currentMonthIdx > 11) {
+          currentMonthIdx = 0;
+          currentYear++;
+        }
+        const label = `${months[currentMonthIdx]} ${currentYear}`;
+        document.getElementById('settleMonthLabel').innerText = label;
+        document.getElementById('summaryMonthName').innerText = months[currentMonthIdx];
+        showToast(`Loaded dues for ${label}`);
       }
 
-      function filterSettle(pill, filter) {
-        document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
-        pill.classList.add('active');
-
-        const rows = document.querySelectorAll('#settleList .roster-row');
+      function filterSettleSearch(query) {
+        const q = query.toLowerCase().trim();
+        const rows = document.querySelectorAll('#settleList .settle-card-row');
         rows.forEach(r => {
-          if (filter === 'all') {
+          const nameData = r.getAttribute('data-name') || '';
+          r.style.display = nameData.includes(q) ? 'flex' : 'none';
+        });
+      }
+
+      function filterSettleCategory(cat) {
+        const pills = ['pillAll', 'pillArrears', 'pillStudents', 'pillMembers'];
+        pills.forEach(p => {
+          const el = document.getElementById(p);
+          el.style.background = 'var(--bg-surface)';
+          el.style.color = 'var(--text-primary)';
+          el.style.borderColor = 'var(--border-default)';
+        });
+
+        const activeId = cat === 'all' ? 'pillAll' : cat === 'arrears' ? 'pillArrears' : cat === 'students' ? 'pillStudents' : 'pillMembers';
+        const activeBtn = document.getElementById(activeId);
+        activeBtn.style.background = 'var(--text-primary)';
+        activeBtn.style.color = 'var(--text-inverse)';
+
+        const rows = document.querySelectorAll('#settleList .settle-card-row');
+        rows.forEach(r => {
+          if (cat === 'all') {
             r.style.display = 'flex';
-          } else if (filter === 'arrears') {
+          } else if (cat === 'arrears') {
             r.style.display = r.getAttribute('data-arrears') === 'true' ? 'flex' : 'none';
-          } else if (filter === 'students') {
-            r.style.display = r.getAttribute('data-category') === 'student' ? 'flex' : 'none';
-          } else if (filter === 'members') {
-            r.style.display = r.getAttribute('data-category') === 'member' ? 'flex' : 'none';
+          } else {
+            r.style.display = r.getAttribute('data-cat') === cat ? 'flex' : 'none';
           }
         });
+      }
+
+      let countDue = 4;
+      let totalDue = 14500;
+
+      function quickSettle(btn, name, amount) {
+        const row = btn.closest('.settle-card-row');
+        row.style.opacity = '0.4';
+        row.style.pointerEvents = 'none';
+
+        countDue = Math.max(0, countDue - 1);
+        totalDue = Math.max(0, totalDue - amount);
+
+        document.getElementById('unsettledPill').innerText = `${countDue} Accounts Due`;
+        document.getElementById('totalDueText').innerText = `₹${totalDue.toLocaleString('en-IN')}`;
+
+        btn.innerText = 'Settled ✓';
+        btn.className = 'btn btn-secondary btn-sm';
+        showToast(`Collected ₹${amount.toLocaleString('en-IN')} from ${name}`);
       }
     </script>
   </body>

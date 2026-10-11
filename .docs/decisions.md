@@ -28,6 +28,14 @@ Why: the owner rejected the generic wireframe style ("seen in 1000+ sites") in f
 
 Rejected: generic monochrome wireframes, and overly decorative chart-heavy themes that distract from correct attendance and fee records.
 
+## 2026-10-11 — Mobile-first navigation with bottom tab bar, month-level filtering, and day-level attendance scroller
+
+The primary interface targets mobile screens used on courts. The layout replaces sidebars and hamburger menus with a thumb-friendly bottom tab bar (`[Attendance] [Settle] [People] [Settings]`). Attendance and Settle default to a month-level filter (`< October 2026 >`). Attendance includes a horizontal calendar day scroller to quickly inspect and edit historical session logs with one tap. Instant zero-click search is integrated across rosters.
+
+Why: the owner clarified that mobile is the primary screen. Sidebars add unnecessary friction and hide core tabs behind extra taps. Coaches and managers need to rapidly check and edit recent days on the courts without navigating deep menus.
+
+Rejected: collapsible sidebars and multi-level date picker dialogs requiring multiple clicks.
+
 ## 2026-10-11 — The app stores fee logs; it does not invent prices
 
 Settings hold amounts the admin can change. A charge is a log of the amount actually used. Correcting a charge does not change later months; the next month follows the settings again. Payments stay append-only.
