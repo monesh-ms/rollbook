@@ -8,11 +8,11 @@ The repository is a starter application. There is no academy, batch, member, ses
 
 How the academy works is settled in `domain.md`. The first version is a plain management website for attendance and fees. Do not start the installable or offline work.
 
-Static screen mocks in `mockups/` are built mobile-first with a persistent bottom tab bar, default month-level filtering, horizontal calendar day scroller for editable past logs, and instant search. They are not the app. The owner has not accepted them yet.
+Static screen mocks in `mockups/` have been accepted by the owner.
 
 ## Next
 
-Owner reviews the mobile-first prototypes in `mockups/`. Once accepted, lock down the Drizzle database schema.
+Discuss, lock down, and implement the Drizzle database schema in `src/db/schema.ts`.
 
 ## Open questions
 
