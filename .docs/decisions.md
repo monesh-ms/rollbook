@@ -2,6 +2,8 @@
 
 ## 2026-10-11 — Web version before the installable app
 
+Partly superseded 2026-10-18: install-to-home-screen is allowed now. See "Installable web app with an offline page; no cached data" below. The offline queue part still stands.
+
 Build the website first. Do not add install-to-home-screen or an offline queue in this phase.
 
 Why: attendance and payments have to be correct before they are available offline. An offline queue that retries writes is only safe once the web writes are already idempotent, which they must be anyway.
@@ -115,6 +117,8 @@ Rejected: an empty session that management searches to add people.
 
 ## 2026-10-14 — No sign-in for now
 
+Superseded 2026-10-18: see "Sign in with Clerk restored; route-level and API protection" below.
+
 The owner said to drop Clerk for now and finish the app. The Clerk provider is bypassed, so there is no login. This supersedes "Sign in with Clerk" above. Sign-in must be restored before real data is entered. Clerk can come back when it is time.
 
 ## 2026-10-14 — Money changes are appended, never edited
@@ -150,4 +154,32 @@ Earlier unpaid money still shows in red on the row. The "no attendance marked th
 Why: the owner said the settle page was hard to follow, and older users cannot read it easily. The old card showed the breakdown, two forms, and a payment dropdown all at once. The attendance page is the simpler model: one line per person and one clear action.
 
 Rejected: making the existing inline forms smaller. Every field would still be on screen at once. Also rejected: a separate page per person, because it adds a screen to go back from.
+
+## 2026-10-18 — Installable web app with an offline page; no cached data
+
+Roll Book can be installed to a phone's home screen. The app has a manifest, icons, and a service worker. With no connection it shows a plain offline page. The service worker stores only the app's code files (the hashed `/assets/` files) and the install files. It never stores a page or a server call. Pages are rendered by the server with live attendance and payments, so a stored copy would show old marks or balances as if they were current.
+
+Marks and payments still need the internet. There is no offline marking and no queue yet.
+
+Why: the owner asked for an app that can be installed and opened from the home screen. Correct marks and balances matter more than offline viewing, so the service worker is limited to code and the offline page.
+
+## 2026-10-18 — Sign in with Clerk restored; route-level and API protection
+
+Clerk authentication is enabled across the application. The root route runs an auth check before child loaders execute, redirecting unauthenticated users to `/sign-in`. The catch-all `/sign-in/$` route renders Clerk's `<SignIn />` component inside the mobile shell without the bottom navigation bar. Server functions enforce authentication via `requireAuth()`. The mobile header displays the user button with account management and sign-out controls. The PWA setup remains intact: manifest and code assets are precached, API calls go to the network, and the offline fallback page is served when disconnected.
+
+Why: unauthenticated users could previously access records, mark attendance, and change finances directly. Restoring Clerk secures the product without disrupting mobile navigation or PWA installability.
+
+Rejected: client-only UI hiding without server-side verification in server functions.
+
+## 2026-10-18 — Single Cloudflare Worker deployment with Cloudflare D1 database
+
+Roll Book is deployed as a single Cloudflare Worker backed by a Cloudflare D1 SQLite database (`rollbook-db`) using the `wrangler` CLI.
+
+The database driver in `src/db/index.ts` uses a runtime proxy that detects Cloudflare Worker environment bindings (`env.DB`), falling back to `bun:sqlite` during testing and local development. All server functions and database operations use asynchronous queries (`await`) to match D1's Promise-based query execution while remaining completely compatible with SQLite in tests. Static assets, PWA manifest, icons, service worker (`/sw.js`), and the fallback offline page (`/offline.html`) are served through Cloudflare's Assets binding (`ASSETS`). Clerk credentials are configured via worker environment variables (`VITE_CLERK_PUBLISHABLE_KEY`) and Cloudflare secret storage (`CLERK_SECRET_KEY`).
+
+Why: the owner requested deployment on Cloudflare with a single worker and a D1 database. D1 provides transactional SQLite semantics in the APAC region with zero infrastructure maintenance, while Cloudflare Workers serves both dynamic SSR/API routes and static PWA assets without multi-service coordination.
+
+Rejected: separating static hosting from API workers, or using an external hosted database over TCP/HTTP. A single worker with attached D1 keeps latency minimal, configuration unified in `wrangler.jsonc`, and operational complexity at the lowest level that holds.
+
+
 

@@ -309,7 +309,7 @@ body {
   align-items: center;
   justify-content: space-around;
   padding-bottom: env(safe-area-inset-bottom);
-  z-index: 50;
+  z-index: 40;
   max-width: 680px;
   margin: 0 auto;
 }

@@ -15,6 +15,7 @@ import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as SettleRouteImport } from './routes/settle'
 import { Route as PeopleIndexRouteImport } from './routes/people/index'
 import { Route as PeopleIdRouteImport } from './routes/people/$id'
+import { Route as SignInSplatRouteImport } from './routes/sign-in.$'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -46,6 +47,11 @@ const PeopleIdRoute = PeopleIdRouteImport.update({
   path: '/people/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SignInSplatRoute = SignInSplatRouteImport.update({
+  id: '/sign-in/$',
+  path: '/sign-in/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -53,6 +59,7 @@ export interface FileRoutesByFullPath {
   '/settings': typeof SettingsRoute
   '/settle': typeof SettleRoute
   '/people/$id': typeof PeopleIdRoute
+  '/sign-in/$': typeof SignInSplatRoute
   '/people/': typeof PeopleIndexRoute
 }
 export interface FileRoutesByTo {
@@ -61,6 +68,7 @@ export interface FileRoutesByTo {
   '/settings': typeof SettingsRoute
   '/settle': typeof SettleRoute
   '/people/$id': typeof PeopleIdRoute
+  '/sign-in/$': typeof SignInSplatRoute
   '/people': typeof PeopleIndexRoute
 }
 export interface FileRoutesById {
@@ -70,14 +78,28 @@ export interface FileRoutesById {
   '/settings': typeof SettingsRoute
   '/settle': typeof SettleRoute
   '/people/$id': typeof PeopleIdRoute
+  '/sign-in/$': typeof SignInSplatRoute
   '/people/': typeof PeopleIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/attendance' | '/settings' | '/settle' | '/people/$id' | '/people/'
+    | '/'
+    | '/attendance'
+    | '/settings'
+    | '/settle'
+    | '/people/$id'
+    | '/sign-in/$'
+    | '/people/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/attendance' | '/settings' | '/settle' | '/people/$id' | '/people'
+  to:
+    | '/'
+    | '/attendance'
+    | '/settings'
+    | '/settle'
+    | '/people/$id'
+    | '/sign-in/$'
+    | '/people'
   id:
     | '__root__'
     | '/'
@@ -85,6 +107,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/settle'
     | '/people/$id'
+    | '/sign-in/$'
     | '/people/'
   fileRoutesById: FileRoutesById
 }
@@ -94,6 +117,7 @@ export interface RootRouteChildren {
   SettingsRoute: typeof SettingsRoute
   SettleRoute: typeof SettleRoute
   PeopleIdRoute: typeof PeopleIdRoute
+  SignInSplatRoute: typeof SignInSplatRoute
   PeopleIndexRoute: typeof PeopleIndexRoute
 }
 
@@ -141,6 +165,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PeopleIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/sign-in/$': {
+      id: '/sign-in/$'
+      path: '/sign-in/$'
+      fullPath: '/sign-in/$'
+      preLoaderRoute: typeof SignInSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -150,6 +181,7 @@ const rootRouteChildren: RootRouteChildren = {
   SettingsRoute: SettingsRoute,
   SettleRoute: SettleRoute,
   PeopleIdRoute: PeopleIdRoute,
+  SignInSplatRoute: SignInSplatRoute,
   PeopleIndexRoute: PeopleIndexRoute,
 }
 export const routeTree = rootRouteImport

@@ -5,6 +5,7 @@ import { db } from "../../db";
 import { attendance, games, memberGames, members } from "../../db/schema";
 import { ACADEMY_ID } from "../academy";
 import { monthOf, todayIn } from "../time";
+import { requireAuth } from "./auth";
 import { readAcademy } from "./data";
 import { batch, calendarDate, personName, recordId } from "./schemas";
 
@@ -29,36 +30,37 @@ const dayQuery = z.object({ date: calendarDate.optional() }).optional();
 export const getAttendanceDay = createServerFn({ method: "GET" })
 	.validator(dayQuery)
 	.handler(async ({ data }) => {
-		const academy = readAcademy(db);
+		await requireAuth();
+		const academy = await readAcademy(db);
 		const today = todayIn(academy.timezone);
 		const date = data?.date ?? today;
 		const month = monthOf(date);
 
-		const memberRows = db
+		const memberRows = (await db
 			.select()
 			.from(members)
 			.where(eq(members.academyId, ACADEMY_ID))
-			.all();
+			.all()) as Array<typeof members.$inferSelect>;
 
-		const sportRows: Array<{ memberId: string; gameName: string }> = db
+		const sportRows: Array<{ memberId: string; gameName: string }> = (await db
 			.select({ memberId: memberGames.memberId, gameName: games.name })
 			.from(memberGames)
 			.innerJoin(games, eq(memberGames.gameId, games.id))
 			.where(eq(memberGames.academyId, ACADEMY_ID))
-			.all();
+			.all()) as Array<{ memberId: string; gameName: string }>;
 
-		const gameRows: Array<{ id: string; name: string }> = db
+		const gameRows: Array<{ id: string; name: string }> = (await db
 			.select({ id: games.id, name: games.name })
 			.from(games)
 			.where(eq(games.academyId, ACADEMY_ID))
-			.all();
+			.all()) as Array<{ id: string; name: string }>;
 
 		const monthMarks: Array<{
 			date: string;
 			batch: "morning" | "evening";
 			memberId: string;
 			status: "present" | "absent";
-		}> = db
+		}> = (await db
 			.select({
 				date: attendance.date,
 				batch: attendance.batch,
@@ -72,7 +74,7 @@ export const getAttendanceDay = createServerFn({ method: "GET" })
 					sql`${attendance.date} LIKE ${`${month}%`}`,
 				),
 			)
-			.all();
+			.all()) as Array<typeof attendance.$inferSelect>;
 
 		const markOf = new Map<string, "present" | "absent">();
 		for (const mark of monthMarks) {
@@ -142,7 +144,8 @@ const markInput = z.object({
 export const markAttendance = createServerFn({ method: "POST" })
 	.validator(markInput)
 	.handler(async ({ data }) => {
-		const member = db
+		await requireAuth();
+		const member = await db
 			.select({ id: members.id })
 			.from(members)
 			.where(
@@ -159,11 +162,12 @@ export const markAttendance = createServerFn({ method: "POST" })
 		);
 
 		if (data.status === "clear") {
-			db.delete(attendance).where(session).run();
+			await db.delete(attendance).where(session).run();
 			return { success: true };
 		}
 
-		db.insert(attendance)
+		await db
+			.insert(attendance)
 			.values({
 				id: `att_${crypto.randomUUID()}`,
 				academyId: ACADEMY_ID,
@@ -200,15 +204,16 @@ const guestInput = z.object({
 export const addGuestToSession = createServerFn({ method: "POST" })
 	.validator(guestInput)
 	.handler(async ({ data }) => {
-		return db.transaction((tx) => {
-			const game = tx
+		await requireAuth();
+		return await db.transaction(async (tx) => {
+			const game = await tx
 				.select({ id: games.id })
 				.from(games)
 				.where(and(eq(games.academyId, ACADEMY_ID), eq(games.id, data.gameId)))
 				.get();
 			if (!game) throw new Error("Game not found");
 
-			let guest = tx
+			let guest = await tx
 				.select({ id: members.id })
 				.from(members)
 				.where(
@@ -222,7 +227,8 @@ export const addGuestToSession = createServerFn({ method: "POST" })
 
 			if (!guest) {
 				const memberId = `mem_${crypto.randomUUID()}`;
-				tx.insert(members)
+				await tx
+					.insert(members)
 					.values({
 						id: memberId,
 						academyId: ACADEMY_ID,
@@ -232,7 +238,8 @@ export const addGuestToSession = createServerFn({ method: "POST" })
 						status: "active",
 					})
 					.run();
-				tx.insert(memberGames)
+				await tx
+					.insert(memberGames)
 					.values({
 						id: `mg_${crypto.randomUUID()}`,
 						academyId: ACADEMY_ID,
@@ -243,7 +250,8 @@ export const addGuestToSession = createServerFn({ method: "POST" })
 				guest = { id: memberId };
 			}
 
-			tx.insert(attendance)
+			await tx
+				.insert(attendance)
 				.values({
 					id: `att_${crypto.randomUUID()}`,
 					academyId: ACADEMY_ID,

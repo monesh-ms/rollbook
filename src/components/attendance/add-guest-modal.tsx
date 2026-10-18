@@ -46,7 +46,7 @@ export function AddGuestModal({
 		"w-full h-9 px-3 mt-1 text-xs rounded-lg border border-input bg-background text-foreground font-normal";
 
 	return (
-		<div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-black/50">
+		<div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/50">
 			<div className="w-full max-w-sm max-h-[90dvh] overflow-y-auto p-4 rounded-xl border border-border bg-background">
 				<div className="flex items-center justify-between pb-3 border-b border-border">
 					<span className="text-sm font-bold text-foreground">

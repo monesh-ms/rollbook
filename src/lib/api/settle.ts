@@ -19,6 +19,7 @@ import {
 	paidIn,
 	previousMonth,
 } from "../ledger";
+import { requireAuth } from "./auth";
 import { type PersonRecord, readPeople } from "./data";
 import {
 	calendarDate,
@@ -57,9 +58,14 @@ function findPerson(people: PersonRecord[], memberId: string): PersonRecord {
 }
 
 /** Freezes months that payments have fully covered, so later rate changes leave them alone. */
-function freezeSettledMonths(tx: Db, person: PersonRecord, endMonth: string) {
+async function freezeSettledMonths(
+	tx: Db,
+	person: PersonRecord,
+	endMonth: string,
+) {
 	for (const row of monthsToFreeze(person.ledger, endMonth)) {
-		tx.insert(monthlyFees)
+		await tx
+			.insert(monthlyFees)
 			.values({
 				id: `mf_${crypto.randomUUID()}`,
 				academyId: ACADEMY_ID,
@@ -81,21 +87,22 @@ const settlementQuery = z
 export const getMonthSettlement = createServerFn({ method: "GET" })
 	.validator(settlementQuery)
 	.handler(async ({ data }) => {
-		const { people, currentMonth } = readPeople(db);
+		await requireAuth();
+		const { people, currentMonth } = await readPeople(db);
 		const month = data?.month ?? currentMonth;
 
+		const attendedRows = (await db
+			.select({ memberId: attendance.memberId })
+			.from(attendance)
+			.where(
+				and(
+					eq(attendance.academyId, ACADEMY_ID),
+					sql`${attendance.date} LIKE ${`${month}%`}`,
+				),
+			)
+			.all()) as Array<{ memberId: string }>;
 		const attendedIds = new Set<string>(
-			db
-				.select({ memberId: attendance.memberId })
-				.from(attendance)
-				.where(
-					and(
-						eq(attendance.academyId, ACADEMY_ID),
-						sql`${attendance.date} LIKE ${`${month}%`}`,
-					),
-				)
-				.all()
-				.map((row: { memberId: string }) => row.memberId),
+			attendedRows.map((row) => row.memberId),
 		);
 
 		const accounts: SettleAccount[] = [];
@@ -159,11 +166,13 @@ const paymentInput = z.object({
 export const recordPayment = createServerFn({ method: "POST" })
 	.validator(paymentInput)
 	.handler(async ({ data }) => {
-		return db.transaction((tx) => {
-			const { people, currentMonth } = readPeople(tx);
+		await requireAuth();
+		return await db.transaction(async (tx) => {
+			const { people, currentMonth } = await readPeople(tx);
 			findPerson(people, data.memberId);
 
-			tx.insert(payments)
+			await tx
+				.insert(payments)
 				.values({
 					id: `pay_${crypto.randomUUID()}`,
 					academyId: ACADEMY_ID,
@@ -174,8 +183,8 @@ export const recordPayment = createServerFn({ method: "POST" })
 				})
 				.run();
 
-			const after = findPerson(readPeople(tx).people, data.memberId);
-			freezeSettledMonths(tx, after, currentMonth);
+			const after = findPerson((await readPeople(tx)).people, data.memberId);
+			await freezeSettledMonths(tx, after, currentMonth);
 			return { success: true };
 		});
 	});
@@ -189,8 +198,9 @@ const reversalInput = z.object({
 export const reversePayment = createServerFn({ method: "POST" })
 	.validator(reversalInput)
 	.handler(async ({ data }) => {
-		return db.transaction((tx) => {
-			const original = tx
+		await requireAuth();
+		return await db.transaction(async (tx) => {
+			const original = (await tx
 				.select()
 				.from(payments)
 				.where(
@@ -199,12 +209,12 @@ export const reversePayment = createServerFn({ method: "POST" })
 						eq(payments.id, data.paymentId),
 					),
 				)
-				.get();
+				.get()) as typeof payments.$inferSelect | undefined;
 			if (!original) throw new Error("Payment not found");
 			if (original.reversalOfId)
 				throw new Error("A reversal cannot be reversed");
 
-			const existing = tx
+			const existing = await tx
 				.select({ id: payments.id })
 				.from(payments)
 				.where(eq(payments.reversalOfId, original.id))
@@ -212,7 +222,8 @@ export const reversePayment = createServerFn({ method: "POST" })
 			if (existing) throw new Error("This payment is already reversed");
 
 			const reversalId = `pay_${crypto.randomUUID()}`;
-			tx.insert(payments)
+			await tx
+				.insert(payments)
 				.values({
 					id: reversalId,
 					academyId: ACADEMY_ID,
@@ -254,8 +265,9 @@ const statusFor = {
 export const adjustMonthlyFee = createServerFn({ method: "POST" })
 	.validator(adjustInput)
 	.handler(async ({ data }) => {
-		return db.transaction((tx) => {
-			const { people, currentMonth } = readPeople(tx);
+		await requireAuth();
+		return await db.transaction(async (tx) => {
+			const { people, currentMonth } = await readPeople(tx);
 			const person = findPerson(people, data.memberId);
 			if (person.type === "guest")
 				throw new Error("Guests have no monthly fee");
@@ -268,7 +280,7 @@ export const adjustMonthlyFee = createServerFn({ method: "POST" })
 			const current = chargeFor(person.ledger, data.month);
 			const amountAfter = data.action === "set_amount" ? (data.amount ?? 0) : 0;
 
-			const existingRow = tx
+			const existingRow = await tx
 				.select({ id: monthlyFees.id })
 				.from(monthlyFees)
 				.where(
@@ -280,7 +292,8 @@ export const adjustMonthlyFee = createServerFn({ method: "POST" })
 				)
 				.get();
 			if (!existingRow) {
-				tx.insert(monthlyFees)
+				await tx
+					.insert(monthlyFees)
 					.values({
 						id: `mf_${crypto.randomUUID()}`,
 						academyId: ACADEMY_ID,
@@ -291,13 +304,15 @@ export const adjustMonthlyFee = createServerFn({ method: "POST" })
 					})
 					.run();
 			} else {
-				tx.update(monthlyFees)
+				await tx
+					.update(monthlyFees)
 					.set({ status: statusFor[data.action] })
 					.where(eq(monthlyFees.id, existingRow.id))
 					.run();
 			}
 
-			tx.insert(feeAdjustments)
+			await tx
+				.insert(feeAdjustments)
 				.values({
 					id: `adj_${crypto.randomUUID()}`,
 					academyId: ACADEMY_ID,
@@ -326,8 +341,9 @@ const visitInput = z.object({
 export const recordVisitCharge = createServerFn({ method: "POST" })
 	.validator(visitInput)
 	.handler(async ({ data }) => {
-		return db.transaction((tx) => {
-			const { people } = readPeople(tx);
+		await requireAuth();
+		return await db.transaction(async (tx) => {
+			const { people } = await readPeople(tx);
 			const person = findPerson(people, data.memberId);
 			if (person.type === "member") {
 				throw new Error(
@@ -335,14 +351,15 @@ export const recordVisitCharge = createServerFn({ method: "POST" })
 				);
 			}
 
-			const game = tx
+			const game = await tx
 				.select({ id: games.id })
 				.from(games)
 				.where(and(eq(games.academyId, ACADEMY_ID), eq(games.id, data.gameId)))
 				.get();
 			if (!game) throw new Error("Game not found");
 
-			tx.insert(visitCharges)
+			await tx
+				.insert(visitCharges)
 				.values({
 					id: `vc_${crypto.randomUUID()}`,
 					academyId: ACADEMY_ID,

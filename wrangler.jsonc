@@ -1,0 +1,17 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "rollbook",
+	"compatibility_date": "2026-10-18",
+	"compatibility_flags": ["nodejs_compat"],
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "rollbook-db",
+			"database_id": "84bf6cec-a178-4f63-bb36-06b88f3cafd4"
+		}
+	],
+	"vars": {
+		"VITE_CLERK_PUBLISHABLE_KEY": "pk_test_Y29oZXJlbnQtYnVsbGZyb2ctNDE1LmNsZXJrLmFjY291bnRzLmRldiQ",
+		"CLERK_TELEMETRY_DISABLED": "1"
+	}
+}

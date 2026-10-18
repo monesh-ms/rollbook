@@ -92,7 +92,7 @@ export function SettleModal({
 	);
 
 	return (
-		<div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-black/50">
+		<div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/50">
 			<div className="w-full max-w-sm max-h-[90dvh] overflow-y-auto p-4 rounded-xl border border-border bg-background">
 				<div className="flex items-start justify-between gap-3 pb-3 border-b border-border">
 					<div className="min-w-0">

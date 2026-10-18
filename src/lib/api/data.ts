@@ -20,8 +20,8 @@ import { localDate, localMonth, todayIn } from "../time";
 
 type Connection = Db;
 
-export function readAcademy(conn: Connection) {
-	const academy = conn
+export async function readAcademy(conn: Connection) {
+	const academy = await conn
 		.select()
 		.from(academies)
 		.where(eq(academies.id, ACADEMY_ID))
@@ -35,8 +35,9 @@ export function readAcademy(conn: Connection) {
 	};
 }
 
-export function readToday(conn: Connection): string {
-	return todayIn(readAcademy(conn).timezone);
+export async function readToday(conn: Connection): Promise<string> {
+	const academy = await readAcademy(conn);
+	return todayIn(academy.timezone);
 }
 
 export interface PersonRecord {
@@ -56,67 +57,72 @@ export interface PersonRecord {
 }
 
 /** Everything needed to compute every person's ledger. Six reads, regardless of headcount. */
-export function readPeople(
+export async function readPeople(
 	conn: Connection,
 	now: Date = new Date(),
-): {
+): Promise<{
 	timezone: string;
 	currentMonth: string;
 	people: PersonRecord[];
-} {
-	const academy = readAcademy(conn);
+}> {
+	const academy = await readAcademy(conn);
 	const tz = academy.timezone;
 	const currentMonth = localMonth(now, tz);
 
-	const memberRows = conn
+	const memberRows = (await conn
 		.select()
 		.from(members)
 		.where(eq(members.academyId, ACADEMY_ID))
-		.all();
-	const gameRows: GameRates[] = conn
+		.all()) as Array<typeof members.$inferSelect>;
+	const gameRows: GameRates[] = (await conn
 		.select()
 		.from(games)
 		.where(eq(games.academyId, ACADEMY_ID))
-		.all();
-	const linkRows: Array<{ memberId: string; gameId: string }> = conn
+		.all()) as GameRates[];
+	const linkRows: Array<{ memberId: string; gameId: string }> = (await conn
 		.select({ memberId: memberGames.memberId, gameId: memberGames.gameId })
 		.from(memberGames)
 		.where(eq(memberGames.academyId, ACADEMY_ID))
-		.all();
+		.all()) as Array<{ memberId: string; gameId: string }>;
 	const feeRows: Array<{ memberId: string; month: string; amountDue: number }> =
-		conn
+		(await conn
 			.select()
 			.from(monthlyFees)
 			.where(eq(monthlyFees.academyId, ACADEMY_ID))
-			.all();
-	const adjustmentRows = conn
+			.all()) as Array<{ memberId: string; month: string; amountDue: number }>;
+	const adjustmentRows = (await conn
 		.select()
 		.from(feeAdjustments)
 		.where(eq(feeAdjustments.academyId, ACADEMY_ID))
 		.orderBy(asc(sql`rowid`))
-		.all();
+		.all()) as Array<typeof feeAdjustments.$inferSelect>;
 	const visitRows: Array<{
 		memberId: string;
 		gameId: string;
 		date: string;
 		amount: number;
-	}> = conn
+	}> = (await conn
 		.select()
 		.from(visitCharges)
 		.where(eq(visitCharges.academyId, ACADEMY_ID))
-		.all();
-	const paymentRows = conn
+		.all()) as Array<{
+		memberId: string;
+		gameId: string;
+		date: string;
+		amount: number;
+	}>;
+	const paymentRows = (await conn
 		.select()
 		.from(payments)
 		.where(eq(payments.academyId, ACADEMY_ID))
 		.orderBy(asc(sql`rowid`))
-		.all();
-	const logRows = conn
+		.all()) as Array<typeof payments.$inferSelect>;
+	const logRows = (await conn
 		.select()
 		.from(memberStatusLogs)
 		.where(eq(memberStatusLogs.academyId, ACADEMY_ID))
 		.orderBy(asc(sql`rowid`))
-		.all();
+		.all()) as Array<typeof memberStatusLogs.$inferSelect>;
 
 	const gamesById = new Map(gameRows.map((game) => [game.id, game]));
 

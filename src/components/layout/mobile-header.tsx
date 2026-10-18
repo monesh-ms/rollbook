@@ -1,6 +1,8 @@
 import { Moon, Sun } from "lucide-react";
 import { useEffect, useState } from "react";
 
+import HeaderUser from "../../integrations/clerk/header-user";
+
 interface MobileHeaderProps {
 	title?: string;
 	subtitle?: string;
@@ -54,6 +56,7 @@ export function MobileHeader({
 				>
 					{isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
 				</button>
+				<HeaderUser />
 			</div>
 		</header>
 	);

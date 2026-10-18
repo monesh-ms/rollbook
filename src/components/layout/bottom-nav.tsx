@@ -5,6 +5,10 @@ export function BottomNav() {
 	const routerState = useRouterState();
 	const currentPath = routerState.location.pathname;
 
+	if (currentPath.startsWith("/sign-in")) {
+		return null;
+	}
+
 	const isAttendance = currentPath === "/" || currentPath === "/attendance";
 	const isSettle = currentPath.startsWith("/settle");
 	const isPeople = currentPath.startsWith("/people");

@@ -4,18 +4,20 @@ import { z } from "zod";
 import { db } from "../../db";
 import { games } from "../../db/schema";
 import { ACADEMY_ID } from "../academy";
+import { requireAuth } from "./auth";
 import { readAcademy } from "./data";
 import { paise, recordId } from "./schemas";
 
 export const getSettings = createServerFn({ method: "GET" }).handler(
 	async () => {
-		const academy = readAcademy(db);
-		const gameRows = db
+		await requireAuth();
+		const academy = await readAcademy(db);
+		const gameRows = (await db
 			.select()
 			.from(games)
 			.where(eq(games.academyId, ACADEMY_ID))
 			.orderBy(asc(games.name))
-			.all() as Array<typeof games.$inferSelect>;
+			.all()) as Array<typeof games.$inferSelect>;
 		return { academy, games: gameRows };
 	},
 );
@@ -37,7 +39,8 @@ const ratesInput = z.object({ games: z.array(gameInput).min(1).max(50) });
 export const updateGameRates = createServerFn({ method: "POST" })
 	.validator(ratesInput)
 	.handler(async ({ data }) => {
-		return db.transaction((tx) => {
+		await requireAuth();
+		return await db.transaction(async (tx) => {
 			for (const game of data.games) {
 				const rates = {
 					memberMonthlyAmount: game.memberMonthlyAmount,
@@ -45,18 +48,20 @@ export const updateGameRates = createServerFn({ method: "POST" })
 					guestVisitAmount: game.guestVisitAmount,
 				};
 				if (game.id) {
-					const existing = tx
+					const existing = await tx
 						.select({ id: games.id })
 						.from(games)
 						.where(and(eq(games.academyId, ACADEMY_ID), eq(games.id, game.id)))
 						.get();
 					if (!existing) throw new Error("Game not found");
-					tx.update(games)
+					await tx
+						.update(games)
 						.set({ name: game.name, ...rates })
 						.where(eq(games.id, game.id))
 						.run();
 				} else {
-					tx.insert(games)
+					await tx
+						.insert(games)
 						.values({
 							id: `game_${crypto.randomUUID()}`,
 							academyId: ACADEMY_ID,

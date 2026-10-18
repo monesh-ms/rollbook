@@ -19,6 +19,7 @@ import {
 	type PersonType,
 } from "../ledger";
 import { localDate, todayIn } from "../time";
+import { requireAuth } from "./auth";
 import { type PersonRecord, readPeople } from "./data";
 import {
 	paise,
@@ -44,7 +45,8 @@ export interface PersonListItem {
 
 export const getMembers = createServerFn({ method: "GET" }).handler(
 	async () => {
-		const { people, currentMonth } = readPeople(db);
+		await requireAuth();
+		const { people, currentMonth } = await readPeople(db);
 		const list: PersonListItem[] = people.map((person) => ({
 			id: person.id,
 			name: person.name,
@@ -99,10 +101,12 @@ const registerInput = memberFields.superRefine((input, ctx) => {
 export const registerMember = createServerFn({ method: "POST" })
 	.validator(registerInput)
 	.handler(async ({ data }) => {
-		return db.transaction((tx) => {
-			assertGamesExist(tx, data.gameIds);
+		await requireAuth();
+		return await db.transaction(async (tx) => {
+			await assertGamesExist(tx, data.gameIds);
 			const memberId = `mem_${crypto.randomUUID()}`;
-			tx.insert(members)
+			await tx
+				.insert(members)
 				.values({
 					id: memberId,
 					academyId: ACADEMY_ID,
@@ -115,7 +119,7 @@ export const registerMember = createServerFn({ method: "POST" })
 					customMonthlyAmount: data.customMonthlyAmount ?? null,
 				})
 				.run();
-			insertGames(tx, memberId, data.gameIds);
+			await insertGames(tx, memberId, data.gameIds);
 			return { success: true, memberId };
 		});
 	});
@@ -134,10 +138,12 @@ const updateInput = memberFields
 export const updateMember = createServerFn({ method: "POST" })
 	.validator(updateInput)
 	.handler(async ({ data }) => {
-		return db.transaction((tx) => {
-			assertMemberExists(tx, data.memberId);
-			assertGamesExist(tx, data.gameIds);
-			tx.update(members)
+		await requireAuth();
+		return await db.transaction(async (tx) => {
+			await assertMemberExists(tx, data.memberId);
+			await assertGamesExist(tx, data.gameIds);
+			await tx
+				.update(members)
 				.set({
 					name: data.name,
 					type: data.type,
@@ -150,7 +156,8 @@ export const updateMember = createServerFn({ method: "POST" })
 					and(eq(members.academyId, ACADEMY_ID), eq(members.id, data.memberId)),
 				)
 				.run();
-			tx.delete(memberGames)
+			await tx
+				.delete(memberGames)
 				.where(
 					and(
 						eq(memberGames.academyId, ACADEMY_ID),
@@ -158,7 +165,7 @@ export const updateMember = createServerFn({ method: "POST" })
 					),
 				)
 				.run();
-			insertGames(tx, data.memberId, data.gameIds);
+			await insertGames(tx, data.memberId, data.gameIds);
 			return { success: true };
 		});
 	});
@@ -173,15 +180,18 @@ const statusInput = z.object({
 export const updateMemberStatus = createServerFn({ method: "POST" })
 	.validator(statusInput)
 	.handler(async ({ data }) => {
-		return db.transaction((tx) => {
-			assertMemberExists(tx, data.memberId);
-			tx.update(members)
+		await requireAuth();
+		return await db.transaction(async (tx) => {
+			await assertMemberExists(tx, data.memberId);
+			await tx
+				.update(members)
 				.set({ status: data.status })
 				.where(
 					and(eq(members.academyId, ACADEMY_ID), eq(members.id, data.memberId)),
 				)
 				.run();
-			tx.insert(memberStatusLogs)
+			await tx
+				.insert(memberStatusLogs)
 				.values({
 					id: `log_${crypto.randomUUID()}`,
 					academyId: ACADEMY_ID,
@@ -212,7 +222,8 @@ const personQuery = z.object({ memberId: recordId });
 export const getMemberLedger = createServerFn({ method: "GET" })
 	.validator(personQuery)
 	.handler(async ({ data }) => {
-		const { people, currentMonth, timezone } = readPeople(db);
+		await requireAuth();
+		const { people, currentMonth, timezone } = await readPeople(db);
 		const person = findPerson(people, data.memberId);
 
 		const lines: LedgerLine[] = [];
@@ -231,7 +242,7 @@ export const getMemberLedger = createServerFn({ method: "GET" })
 			}
 		}
 
-		const gameRows = db
+		const gameRows = await db
 			.select({
 				id: games.id,
 				name: games.name,
@@ -244,7 +255,7 @@ export const getMemberLedger = createServerFn({ method: "GET" })
 			.orderBy(asc(games.name))
 			.all();
 
-		const adjustmentRows = db
+		const adjustmentRows = await db
 			.select()
 			.from(feeAdjustments)
 			.where(
@@ -267,7 +278,7 @@ export const getMemberLedger = createServerFn({ method: "GET" })
 			});
 		}
 
-		const visitRows = db
+		const visitRows = await db
 			.select({
 				id: visitCharges.id,
 				date: visitCharges.date,
@@ -296,7 +307,7 @@ export const getMemberLedger = createServerFn({ method: "GET" })
 			});
 		}
 
-		const paymentRows = db
+		const paymentRows = (await db
 			.select()
 			.from(payments)
 			.where(
@@ -306,7 +317,7 @@ export const getMemberLedger = createServerFn({ method: "GET" })
 				),
 			)
 			.orderBy(asc(sql`rowid`))
-			.all() as Array<typeof payments.$inferSelect>;
+			.all()) as Array<typeof payments.$inferSelect>;
 		const reversedIds = new Set(
 			paymentRows
 				.map((row) => row.reversalOfId)
@@ -396,8 +407,8 @@ function adjustmentText(row: {
 	return `${label} for ${row.month} (was ${before}, now ${rupees(row.amountAfter)}${reason})`;
 }
 
-function assertMemberExists(tx: Db, memberId: string) {
-	const row = tx
+async function assertMemberExists(tx: Db, memberId: string) {
+	const row = await tx
 		.select({ id: members.id })
 		.from(members)
 		.where(and(eq(members.academyId, ACADEMY_ID), eq(members.id, memberId)))
@@ -405,9 +416,9 @@ function assertMemberExists(tx: Db, memberId: string) {
 	if (!row) throw new Error("Person not found");
 }
 
-function assertGamesExist(tx: Db, gameIds: string[]) {
+async function assertGamesExist(tx: Db, gameIds: string[]) {
 	for (const gameId of gameIds) {
-		const row = tx
+		const row = await tx
 			.select({ id: games.id })
 			.from(games)
 			.where(and(eq(games.academyId, ACADEMY_ID), eq(games.id, gameId)))
@@ -416,9 +427,10 @@ function assertGamesExist(tx: Db, gameIds: string[]) {
 	}
 }
 
-function insertGames(tx: Db, memberId: string, gameIds: string[]) {
+async function insertGames(tx: Db, memberId: string, gameIds: string[]) {
 	for (const gameId of new Set(gameIds)) {
-		tx.insert(memberGames)
+		await tx
+			.insert(memberGames)
 			.values({
 				id: `mg_${crypto.randomUUID()}`,
 				academyId: ACADEMY_ID,
