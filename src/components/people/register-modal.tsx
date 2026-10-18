@@ -1,6 +1,5 @@
 import { X } from "lucide-react";
 import { useState } from "react";
-import { rupeesToPaise } from "../../lib/money";
 
 export interface PersonForm {
 	name: string;
@@ -46,13 +45,6 @@ export function PersonModal({
 	const [gameIds, setGameIds] = useState<string[]>(
 		initial?.gameIds ?? (games[0] ? [games[0].id] : []),
 	);
-	const [phone, setPhone] = useState(initial?.contactNumber ?? "");
-	const [address, setAddress] = useState(initial?.address ?? "");
-	const [customRate, setCustomRate] = useState(
-		initial?.customMonthlyAmount !== undefined
-			? String(initial.customMonthlyAmount / 100)
-			: "",
-	);
 	const [formError, setFormError] = useState<string | null>(null);
 
 	const toggleGame = (gameId: string) => {
@@ -73,27 +65,15 @@ export function PersonModal({
 			setFormError("Choose at least one game.");
 			return;
 		}
-		const custom =
-			customRate.trim() === "" ? undefined : rupeesToPaise(customRate);
-		if (custom === null) {
-			setFormError(
-				"Enter the custom monthly amount in rupees, or leave it empty.",
-			);
-			return;
-		}
-		if (type === "guest" && custom !== undefined) {
-			setFormError("Guests pay per visit, so they have no monthly amount.");
-			return;
-		}
 		setFormError(null);
 		onSubmit({
 			name: name.trim(),
 			type,
 			batch,
 			gameIds,
-			contactNumber: phone.trim() || undefined,
-			address: address.trim() || undefined,
-			customMonthlyAmount: custom,
+			contactNumber: initial?.contactNumber,
+			address: initial?.address,
+			customMonthlyAmount: initial?.customMonthlyAmount,
 		});
 	};
 
@@ -179,46 +159,6 @@ export function PersonModal({
 							))}
 						</div>
 					</fieldset>
-
-					<label className="block text-[11px] font-semibold text-muted-foreground">
-						Phone
-						<input
-							name="phone"
-							type="tel"
-							autoComplete="off"
-							value={phone}
-							onChange={(e) => setPhone(e.target.value)}
-							className={field}
-						/>
-					</label>
-
-					<label className="block text-[11px] font-semibold text-muted-foreground">
-						Address
-						<input
-							name="address"
-							type="text"
-							autoComplete="off"
-							value={address}
-							onChange={(e) => setAddress(e.target.value)}
-							className={field}
-						/>
-					</label>
-
-					{type !== "guest" && (
-						<label className="block text-[11px] font-semibold text-muted-foreground">
-							Monthly amount (₹), only for two or more games
-							<input
-								name="custom-amount"
-								type="text"
-								inputMode="numeric"
-								autoComplete="off"
-								value={customRate}
-								onChange={(e) => setCustomRate(e.target.value)}
-								placeholder="Leave empty to use the settings rate"
-								className={`${field} mono-num`}
-							/>
-						</label>
-					)}
 
 					{(formError || error) && (
 						<p role="alert" className="text-xs font-semibold text-rose-600">
