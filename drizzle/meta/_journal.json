@@ -8,6 +8,13 @@
       "when": 1791717394625,
       "tag": "0000_faithful_the_hood",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1791773912272,
+      "tag": "0001_fee_adjustments",
+      "breakpoints": true
     }
   ]
 }

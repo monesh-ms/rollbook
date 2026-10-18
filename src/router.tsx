@@ -5,8 +5,8 @@ export function getRouter() {
 	const router = createTanStackRouter({
 		routeTree,
 		scrollRestoration: true,
-		defaultPreload: "intent",
-		defaultPreloadStaleTime: 0,
+		// Hovering a tab must not fetch its data. Each navigation loads once.
+		defaultPreload: false,
 	});
 
 	return router;

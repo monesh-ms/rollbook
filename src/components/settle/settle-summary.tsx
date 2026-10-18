@@ -1,37 +1,42 @@
+import { formatInr } from "../../lib/money";
+
 interface SettleSummaryProps {
-	monthName: string;
-	totalDuePaise: number;
-	priorArrearsPaise: number;
+	monthLabel: string;
+	totalOwed: number;
+	carriedOver: number;
+	unsettledCount: number;
+	needsAmountCount: number;
 }
 
 export function SettleSummary({
-	monthName,
-	totalDuePaise,
-	priorArrearsPaise,
+	monthLabel,
+	totalOwed,
+	carriedOver,
+	unsettledCount,
+	needsAmountCount,
 }: SettleSummaryProps) {
-	const formattedTotal = (totalDuePaise / 100).toLocaleString("en-IN");
-	const formattedArrears = (priorArrearsPaise / 100).toLocaleString("en-IN");
-
 	return (
-		<div className="p-4 rounded-xl border border-border bg-gradient-to-b from-background to-secondary/30 shadow-xs">
-			<div className="flex items-start justify-between">
-				<div>
-					<span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
-						Total Outstanding · {monthName}
-					</span>
-					<div className="mt-0.5 text-2xl font-extrabold mono-num text-rose-600 dark:text-rose-400">
-						₹{formattedTotal}
-					</div>
-				</div>
-				<div className="text-right">
-					<span className="text-[11px] font-medium text-muted-foreground">
-						Prior Arrears
-					</span>
-					<div className="text-sm font-bold mono-num text-amber-600 dark:text-amber-400">
-						₹{formattedArrears}
-					</div>
-				</div>
+		<div className="p-4 rounded-xl border border-border bg-background">
+			<span className="text-xs font-semibold text-muted-foreground">
+				Still to collect · {monthLabel}
+			</span>
+			<div className="mt-1 text-3xl font-extrabold mono-num text-foreground">
+				{formatInr(totalOwed)}
 			</div>
+			<p className="mt-2 text-sm text-muted-foreground">
+				{unsettledCount} {unsettledCount === 1 ? "person" : "people"} still to
+				pay
+				{carriedOver > 0 && (
+					<>
+						{" · "}
+						<span className="font-semibold text-rose-600 dark:text-rose-400">
+							{formatInr(carriedOver)} from earlier months
+						</span>
+					</>
+				)}
+				{needsAmountCount > 0 &&
+					` · ${needsAmountCount} need an amount typed in`}
+			</p>
 		</div>
 	);
 }

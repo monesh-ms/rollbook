@@ -149,6 +149,27 @@ export const monthlyFees = sqliteTable(
 	],
 );
 
+// 7b. Fee corrections, append-only. The latest row for a member and month is the amount used.
+export const feeAdjustments = sqliteTable("fee_adjustments", {
+	id: text("id").primaryKey(),
+	academyId: text("academy_id")
+		.notNull()
+		.references(() => academies.id),
+	memberId: text("member_id")
+		.notNull()
+		.references(() => members.id),
+	month: text("month").notNull(), // 'YYYY-MM'
+	action: text("action", {
+		enum: ["set_amount", "waive_no_fee", "switch_to_visits"],
+	}).notNull(),
+	amountBefore: integer("amount_before"), // null when the amount still had to be typed
+	amountAfter: integer("amount_after").notNull(), // integer paise
+	reason: text("reason"),
+	createdAt: integer("created_at", { mode: "timestamp" }).default(
+		sql`(unixepoch())`,
+	),
+});
+
 // 8. On-The-Spot Visit Charges (For Guests & Short-Stay Students)
 export const visitCharges = sqliteTable("visit_charges", {
 	id: text("id").primaryKey(),

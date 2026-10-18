@@ -263,6 +263,7 @@ export async function seedDatabase() {
 				amount: 100000,
 				paymentMethod: "upi",
 				notes: "Partial payment for September fee",
+				paidAt: new Date("2026-09-12T10:00:00+05:30"),
 			},
 			// Dev paid ₹4,500 for September on 28 Sep 2026
 			{
@@ -272,6 +273,7 @@ export async function seedDatabase() {
 				amount: 450000,
 				paymentMethod: "cash",
 				notes: "September full settlement",
+				paidAt: new Date("2026-09-28T10:00:00+05:30"),
 			},
 		])
 		.onConflictDoNothing();

@@ -16,7 +16,10 @@ const config = defineConfig({
 			rollupConfig: { external: [/^@sentry\//] },
 		}),
 		tailwindcss(),
-		tanstackStart(),
+		tanstackStart({
+			// Static app shell is prerendered at build time. Data comes from server functions.
+			spa: { enabled: true },
+		}),
 		viteReact(),
 	],
 });

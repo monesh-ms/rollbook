@@ -1,142 +1,273 @@
 import { createServerFn } from "@tanstack/react-start";
-import { and, desc, eq } from "drizzle-orm";
-import { db } from "../../db";
+import { and, asc, eq, sql } from "drizzle-orm";
+import { z } from "zod";
+import { type Db, db } from "../../db";
 import {
+	feeAdjustments,
 	games,
 	memberGames,
 	memberStatusLogs,
 	members,
-	monthlyFees,
 	payments,
 	visitCharges,
 } from "../../db/schema";
+import { ACADEMY_ID } from "../academy";
+import {
+	chargeFor,
+	monthlyCharges,
+	owedThrough,
+	type PersonType,
+} from "../ledger";
+import { localDate, todayIn } from "../time";
+import { type PersonRecord, readPeople } from "./data";
+import {
+	paise,
+	personBatch,
+	personName,
+	personType,
+	phone,
+	recordId,
+	shortNote,
+} from "./schemas";
 
-const DEFAULT_ACADEMY_ID = "acad_ms_sports";
+export interface PersonListItem {
+	id: string;
+	name: string;
+	type: PersonType;
+	batch: "morning" | "evening" | "both";
+	sports: string[];
+	contactNumber: string | null;
+	address: string | null;
+	status: "active" | "inactive";
+	owed: number;
+}
 
-export const getMembers = createServerFn({ method: "GET" })
-	.validator(
-		(data?: { search?: string; type?: string; status?: string }) => data || {},
-	)
-	.handler(async () => {
-		const academyId = DEFAULT_ACADEMY_ID;
-
-		// Fetch members
-		const memberRows = await db
-			.select()
-			.from(members)
-			.where(eq(members.academyId, academyId));
-
-		// Fetch sports
-		const sportRows = await db
-			.select({
-				memberId: memberGames.memberId,
-				gameId: games.id,
-				gameName: games.name,
-			})
-			.from(memberGames)
-			.innerJoin(games, eq(memberGames.gameId, games.id));
-
-		const memberSportsMap = new Map<
-			string,
-			Array<{ id: string; name: string }>
-		>();
-		for (const r of sportRows) {
-			const list = memberSportsMap.get(r.memberId) || [];
-			list.push({ id: r.gameId, name: r.gameName });
-			memberSportsMap.set(r.memberId, list);
-		}
-
-		const mapped = memberRows.map((m: any) => ({
-			...m,
-			sports: memberSportsMap.get(m.id) || [],
+export const getMembers = createServerFn({ method: "GET" }).handler(
+	async () => {
+		const { people, currentMonth } = readPeople(db);
+		const list: PersonListItem[] = people.map((person) => ({
+			id: person.id,
+			name: person.name,
+			type: person.type,
+			batch: person.batch,
+			sports: person.sports,
+			contactNumber: person.contactNumber,
+			address: person.address,
+			status: person.status,
+			owed: owedThrough(person.ledger, currentMonth),
 		}));
-
-		const totalActive = mapped.filter((m: any) => m.status === "active").length;
-
 		return {
-			members: mapped,
+			members: list,
 			summary: {
-				total: mapped.length,
-				totalActive,
+				total: list.length,
+				totalActive: list.filter((p) => p.status === "active").length,
 			},
 		};
+	},
+);
+
+const memberFields = z.object({
+	name: personName,
+	type: personType,
+	batch: personBatch,
+	gameIds: z.array(recordId).max(10),
+	contactNumber: phone,
+	address: shortNote.optional(),
+	customMonthlyAmount: paise.optional(),
+});
+
+const memberRules = (input: z.infer<typeof memberFields>) => {
+	const issues: Array<{ message: string; path: string[] }> = [];
+	if (input.gameIds.length === 0) {
+		issues.push({ message: "Choose at least one game", path: ["gameIds"] });
+	}
+	if (input.type === "guest" && input.customMonthlyAmount !== undefined) {
+		issues.push({
+			message: "Guests pay per visit, so they have no monthly amount",
+			path: ["customMonthlyAmount"],
+		});
+	}
+	return issues;
+};
+
+const registerInput = memberFields.superRefine((input, ctx) => {
+	for (const issue of memberRules(input))
+		ctx.addIssue({ code: "custom", ...issue });
+});
+
+/** Adds a person. Games must belong to this academy. */
+export const registerMember = createServerFn({ method: "POST" })
+	.validator(registerInput)
+	.handler(async ({ data }) => {
+		return db.transaction((tx) => {
+			assertGamesExist(tx, data.gameIds);
+			const memberId = `mem_${crypto.randomUUID()}`;
+			tx.insert(members)
+				.values({
+					id: memberId,
+					academyId: ACADEMY_ID,
+					name: data.name,
+					type: data.type,
+					batch: data.batch,
+					contactNumber: data.contactNumber ?? null,
+					address: data.address || null,
+					status: "active",
+					customMonthlyAmount: data.customMonthlyAmount ?? null,
+				})
+				.run();
+			insertGames(tx, memberId, data.gameIds);
+			return { success: true, memberId };
+		});
 	});
 
-export const registerMember = createServerFn({ method: "POST" })
-	.validator(
-		(data: {
-			name: string;
-			type: "member" | "student" | "guest";
-			batch: "morning" | "evening" | "both";
-			gameIds: string[];
-			contactNumber?: string;
-			address?: string;
-			customMonthlyAmount?: number;
-		}) => data,
-	)
+const updateInput = memberFields
+	.extend({ memberId: recordId })
+	.superRefine((input, ctx) => {
+		for (const issue of memberRules(input))
+			ctx.addIssue({ code: "custom", ...issue });
+	});
+
+/**
+ * Edits a person's details. Unsettled months follow the new type, games or amount,
+ * the same way they follow a rate change. Settled months stay as they were.
+ */
+export const updateMember = createServerFn({ method: "POST" })
+	.validator(updateInput)
 	.handler(async ({ data }) => {
-		const academyId = DEFAULT_ACADEMY_ID;
-		const memberId = `mem_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
-
-		await db.insert(members).values({
-			id: memberId,
-			academyId,
-			name: data.name,
-			type: data.type,
-			batch: data.batch,
-			contactNumber: data.contactNumber,
-			address: data.address,
-			status: "active",
-			customMonthlyAmount: data.customMonthlyAmount,
+		return db.transaction((tx) => {
+			assertMemberExists(tx, data.memberId);
+			assertGamesExist(tx, data.gameIds);
+			tx.update(members)
+				.set({
+					name: data.name,
+					type: data.type,
+					batch: data.batch,
+					contactNumber: data.contactNumber ?? null,
+					address: data.address || null,
+					customMonthlyAmount: data.customMonthlyAmount ?? null,
+				})
+				.where(
+					and(eq(members.academyId, ACADEMY_ID), eq(members.id, data.memberId)),
+				)
+				.run();
+			tx.delete(memberGames)
+				.where(
+					and(
+						eq(memberGames.academyId, ACADEMY_ID),
+						eq(memberGames.memberId, data.memberId),
+					),
+				)
+				.run();
+			insertGames(tx, data.memberId, data.gameIds);
+			return { success: true };
 		});
+	});
 
-		for (const gameId of data.gameIds) {
-			await db.insert(memberGames).values({
-				id: `mg_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
-				academyId,
-				memberId,
-				gameId,
+const statusInput = z.object({
+	memberId: recordId,
+	status: z.enum(["active", "inactive"]),
+	reason: shortNote.optional(),
+});
+
+/** Sets active or inactive. Each change is logged with its date. */
+export const updateMemberStatus = createServerFn({ method: "POST" })
+	.validator(statusInput)
+	.handler(async ({ data }) => {
+		return db.transaction((tx) => {
+			assertMemberExists(tx, data.memberId);
+			tx.update(members)
+				.set({ status: data.status })
+				.where(
+					and(eq(members.academyId, ACADEMY_ID), eq(members.id, data.memberId)),
+				)
+				.run();
+			tx.insert(memberStatusLogs)
+				.values({
+					id: `log_${crypto.randomUUID()}`,
+					academyId: ACADEMY_ID,
+					memberId: data.memberId,
+					status: data.status,
+					reason: data.reason || "Set by management",
+				})
+				.run();
+			return { success: true };
+		});
+	});
+
+export interface LedgerLine {
+	id: string;
+	date: string;
+	kind: "monthly_fee" | "adjustment" | "visit_charge" | "payment" | "reversal";
+	description: string;
+	/** Positive amount in paise. null when the monthly amount still has to be typed. */
+	amount: number | null;
+	/** owed = adds to what is owed, paid = reduces it, info = no money effect. */
+	effect: "owed" | "paid" | "info";
+	reversible: boolean;
+}
+
+const personQuery = z.object({ memberId: recordId });
+
+/** One person's ledger and what they owe now. Same rules as the settle screen. */
+export const getMemberLedger = createServerFn({ method: "GET" })
+	.validator(personQuery)
+	.handler(async ({ data }) => {
+		const { people, currentMonth, timezone } = readPeople(db);
+		const person = findPerson(people, data.memberId);
+
+		const lines: LedgerLine[] = [];
+
+		if (person.type !== "guest") {
+			for (const charge of monthlyCharges(person.ledger, currentMonth)) {
+				lines.push({
+					id: `fee_${charge.month}`,
+					date: `${charge.month}-01`,
+					kind: "monthly_fee",
+					description: `Monthly fee, ${monthLabel(charge.month)}`,
+					amount: charge.amount,
+					effect: charge.amount === null ? "info" : "owed",
+					reversible: false,
+				});
+			}
+		}
+
+		const gameRows = db
+			.select({
+				id: games.id,
+				name: games.name,
+				memberMonthlyAmount: games.memberMonthlyAmount,
+				studentMonthlyAmount: games.studentMonthlyAmount,
+				guestVisitAmount: games.guestVisitAmount,
+			})
+			.from(games)
+			.where(eq(games.academyId, ACADEMY_ID))
+			.orderBy(asc(games.name))
+			.all();
+
+		const adjustmentRows = db
+			.select()
+			.from(feeAdjustments)
+			.where(
+				and(
+					eq(feeAdjustments.academyId, ACADEMY_ID),
+					eq(feeAdjustments.memberId, data.memberId),
+				),
+			)
+			.orderBy(asc(sql`rowid`))
+			.all();
+		for (const row of adjustmentRows) {
+			lines.push({
+				id: row.id,
+				date: localDate(row.createdAt ?? new Date(), timezone),
+				kind: "adjustment",
+				description: adjustmentText(row),
+				amount: row.amountAfter,
+				effect: "info",
+				reversible: false,
 			});
 		}
 
-		return { success: true, memberId };
-	});
-
-export const getMemberLedger = createServerFn({ method: "GET" })
-	.validator((data: { memberId: string }) => data)
-	.handler(async ({ data }) => {
-		const academyId = DEFAULT_ACADEMY_ID;
-
-		const member = await db
-			.select()
-			.from(members)
-			.where(
-				and(eq(members.academyId, academyId), eq(members.id, data.memberId)),
-			)
-			.get();
-
-		if (!member) throw new Error("Member not found");
-
-		// Fetch member sports
-		const sportRows = await db
-			.select({ gameName: games.name })
-			.from(memberGames)
-			.innerJoin(games, eq(memberGames.gameId, games.id))
-			.where(eq(memberGames.memberId, data.memberId));
-
-		// Monthly fees
-		const fees = await db
-			.select()
-			.from(monthlyFees)
-			.where(
-				and(
-					eq(monthlyFees.academyId, academyId),
-					eq(monthlyFees.memberId, data.memberId),
-				),
-			);
-
-		// Visit charges
-		const visits = await db
+		const visitRows = db
 			.select({
 				id: visitCharges.id,
 				date: visitCharges.date,
@@ -148,120 +279,152 @@ export const getMemberLedger = createServerFn({ method: "GET" })
 			.innerJoin(games, eq(visitCharges.gameId, games.id))
 			.where(
 				and(
-					eq(visitCharges.academyId, academyId),
+					eq(visitCharges.academyId, ACADEMY_ID),
 					eq(visitCharges.memberId, data.memberId),
 				),
-			);
+			)
+			.all();
+		for (const row of visitRows) {
+			lines.push({
+				id: row.id,
+				date: row.date,
+				kind: "visit_charge",
+				description: `${row.gameName} visit`,
+				amount: row.amount,
+				effect: "owed",
+				reversible: false,
+			});
+		}
 
-		// Payments
-		const payRows = await db
+		const paymentRows = db
 			.select()
 			.from(payments)
 			.where(
 				and(
-					eq(payments.academyId, academyId),
+					eq(payments.academyId, ACADEMY_ID),
 					eq(payments.memberId, data.memberId),
 				),
 			)
-			.orderBy(desc(payments.paidAt));
-
-		// Aggregate ledger items
-		const ledgerItems: Array<{
-			id: string;
-			date: string;
-			type: "monthly_fee" | "visit_charge" | "payment" | "reversal";
-			description: string;
-			amount: number;
-			isCredit: boolean;
-		}> = [];
-
-		for (const f of fees) {
-			ledgerItems.push({
-				id: f.id,
-				date: `${f.month}-01`,
-				type: "monthly_fee",
-				description: `Monthly Fee (${f.month})`,
-				amount: f.amountDue,
-				isCredit: false,
-			});
-		}
-
-		for (const v of visits) {
-			ledgerItems.push({
-				id: v.id,
-				date: v.date,
-				type: "visit_charge",
-				description: `${v.gameName} Visit Charge`,
-				amount: v.amount,
-				isCredit: false,
-			});
-		}
-
-		for (const p of payRows) {
-			ledgerItems.push({
-				id: p.id,
-				date: p.paidAt
-					? new Date(p.paidAt).toISOString().split("T")[0]
-					: "2026-10-11",
-				type: p.reversalOfId ? "reversal" : "payment",
-				description:
-					p.notes || (p.reversalOfId ? "Payment Reversal" : "Payment Received"),
-				amount: p.amount,
-				isCredit: !p.reversalOfId,
-			});
-		}
-
-		// Sort descending by date
-		ledgerItems.sort((a, b) => b.date.localeCompare(a.date));
-
-		const totalDebits =
-			fees.reduce(
-				(acc: number, f: { amountDue: number }) => acc + f.amountDue,
-				0,
-			) +
-			visits.reduce((acc: number, v: { amount: number }) => acc + v.amount, 0);
-		const totalCredits = payRows.reduce(
-			(acc: number, p: { amount: number; reversalOfId: string | null }) =>
-				acc + (p.reversalOfId ? -p.amount : p.amount),
-			0,
+			.orderBy(asc(sql`rowid`))
+			.all() as Array<typeof payments.$inferSelect>;
+		const reversedIds = new Set(
+			paymentRows
+				.map((row) => row.reversalOfId)
+				.filter((id): id is string => id !== null),
 		);
-		const currentBalanceOwed = Math.max(0, totalDebits - totalCredits);
+		for (const row of paymentRows) {
+			const isReversal = row.reversalOfId !== null;
+			lines.push({
+				id: row.id,
+				date: localDate(row.paidAt ?? new Date(), timezone),
+				kind: isReversal ? "reversal" : "payment",
+				description: isReversal
+					? `Reversal, ${row.notes ?? ""}`.trim()
+					: `Payment by ${row.paymentMethod}${row.notes ? `, ${row.notes}` : ""}`,
+				amount: row.amount,
+				effect: isReversal ? "owed" : "paid",
+				reversible: !isReversal && !reversedIds.has(row.id),
+			});
+		}
+
+		lines.sort(
+			(a, b) => b.date.localeCompare(a.date) || b.id.localeCompare(a.id),
+		);
 
 		return {
-			member: {
-				...member,
-				sports: sportRows.map((s: { gameName: string }) => s.gameName),
-			},
-			currentBalanceOwed,
-			ledger: ledgerItems,
+			member: publicPerson(person),
+			games: gameRows,
+			today: todayIn(timezone),
+			currentMonth,
+			owed: owedThrough(person.ledger, currentMonth),
+			currentCharge:
+				person.type === "guest" ? null : chargeFor(person.ledger, currentMonth),
+			lines,
 		};
 	});
 
-export const updateMemberStatus = createServerFn({ method: "POST" })
-	.validator(
-		(data: {
-			memberId: string;
-			status: "active" | "inactive";
-			reason?: string;
-		}) => data,
-	)
-	.handler(async ({ data }) => {
-		const academyId = DEFAULT_ACADEMY_ID;
+function monthLabel(month: string): string {
+	const [year, monthNumber] = month.split("-").map(Number);
+	return new Date(Date.UTC(year, monthNumber - 1, 1)).toLocaleDateString(
+		"en-IN",
+		{
+			month: "long",
+			year: "numeric",
+			timeZone: "UTC",
+		},
+	);
+}
 
-		await db
-			.update(members)
-			.set({ status: data.status })
-			.where(
-				and(eq(members.academyId, academyId), eq(members.id, data.memberId)),
-			);
+function publicPerson(person: PersonRecord) {
+	return {
+		id: person.id,
+		name: person.name,
+		type: person.type,
+		batch: person.batch,
+		status: person.status,
+		contactNumber: person.contactNumber,
+		address: person.address,
+		sports: person.sports,
+		games: person.games,
+		customMonthlyAmount: person.customMonthlyAmount,
+	};
+}
 
-		await db.insert(memberStatusLogs).values({
-			id: `log_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
-			academyId,
-			memberId: data.memberId,
-			status: data.status,
-			reason: data.reason || "Status updated by management",
-		});
+function findPerson(people: PersonRecord[], memberId: string): PersonRecord {
+	const person = people.find((p) => p.id === memberId);
+	if (!person) throw new Error("Person not found");
+	return person;
+}
 
-		return { success: true };
-	});
+function adjustmentText(row: {
+	month: string;
+	action: string;
+	amountBefore: number | null;
+	amountAfter: number;
+	reason: string | null;
+}): string {
+	const label =
+		row.action === "waive_no_fee"
+			? "No fee"
+			: row.action === "switch_to_visits"
+				? "Charged per visit instead"
+				: "Amount set";
+	const rupees = (paise: number) => (paise / 100).toLocaleString("en-IN");
+	const before =
+		row.amountBefore === null ? "not set" : rupees(row.amountBefore);
+	const reason = row.reason ? `, ${row.reason}` : "";
+	return `${label} for ${row.month} (was ${before}, now ${rupees(row.amountAfter)}${reason})`;
+}
+
+function assertMemberExists(tx: Db, memberId: string) {
+	const row = tx
+		.select({ id: members.id })
+		.from(members)
+		.where(and(eq(members.academyId, ACADEMY_ID), eq(members.id, memberId)))
+		.get();
+	if (!row) throw new Error("Person not found");
+}
+
+function assertGamesExist(tx: Db, gameIds: string[]) {
+	for (const gameId of gameIds) {
+		const row = tx
+			.select({ id: games.id })
+			.from(games)
+			.where(and(eq(games.academyId, ACADEMY_ID), eq(games.id, gameId)))
+			.get();
+		if (!row) throw new Error("Game not found");
+	}
+}
+
+function insertGames(tx: Db, memberId: string, gameIds: string[]) {
+	for (const gameId of new Set(gameIds)) {
+		tx.insert(memberGames)
+			.values({
+				id: `mg_${crypto.randomUUID()}`,
+				academyId: ACADEMY_ID,
+				memberId,
+				gameId,
+			})
+			.run();
+	}
+}

@@ -1,68 +1,115 @@
 import { X } from "lucide-react";
 import { useState } from "react";
+import { rupeesToPaise } from "../../lib/money";
 
-interface RegisterModalProps {
-	isOpen: boolean;
-	onClose: () => void;
-	onRegister: (data: {
-		name: string;
-		type: "member" | "student" | "guest";
-		batch: "morning" | "evening" | "both";
-		gameIds: string[];
-		contactNumber?: string;
-		address?: string;
-		customMonthlyAmount?: number;
-	}) => void;
-	availableGames: Array<{ id: string; name: string }>;
+export interface PersonForm {
+	name: string;
+	type: "member" | "student" | "guest";
+	batch: "morning" | "evening" | "both";
+	gameIds: string[];
+	contactNumber?: string;
+	address?: string;
+	customMonthlyAmount?: number;
 }
 
-export function RegisterModal({
-	isOpen,
-	onClose,
-	onRegister,
-	availableGames,
-}: RegisterModalProps) {
-	const [name, setName] = useState("");
-	const [type, setType] = useState<"member" | "student" | "guest">("student");
-	const [batch, setBatch] = useState<"morning" | "evening" | "both">("morning");
-	const [selectedGameId, setSelectedGameId] = useState(
-		availableGames[0]?.id || "game_badminton",
-	);
-	const [phone, setPhone] = useState("");
-	const [address, setAddress] = useState("");
-	const [customRate, setCustomRate] = useState("");
+interface PersonModalProps {
+	title: string;
+	submitLabel: string;
+	initial?: PersonForm;
+	games: Array<{ id: string; name: string }>;
+	busy: boolean;
+	error: string | null;
+	onClose: () => void;
+	onSubmit: (form: PersonForm) => void;
+}
 
-	if (!isOpen) return null;
+/**
+ * Add or edit a person. Mount it only while open, so its fields start from `initial`.
+ */
+export function PersonModal({
+	title,
+	submitLabel,
+	initial,
+	games,
+	busy,
+	error,
+	onClose,
+	onSubmit,
+}: PersonModalProps) {
+	const [name, setName] = useState(initial?.name ?? "");
+	const [type, setType] = useState<PersonForm["type"]>(
+		initial?.type ?? "student",
+	);
+	const [batch, setBatch] = useState<PersonForm["batch"]>(
+		initial?.batch ?? "morning",
+	);
+	const [gameIds, setGameIds] = useState<string[]>(
+		initial?.gameIds ?? (games[0] ? [games[0].id] : []),
+	);
+	const [phone, setPhone] = useState(initial?.contactNumber ?? "");
+	const [address, setAddress] = useState(initial?.address ?? "");
+	const [customRate, setCustomRate] = useState(
+		initial?.customMonthlyAmount !== undefined
+			? String(initial.customMonthlyAmount / 100)
+			: "",
+	);
+	const [formError, setFormError] = useState<string | null>(null);
+
+	const toggleGame = (gameId: string) => {
+		setGameIds((current) =>
+			current.includes(gameId)
+				? current.filter((id) => id !== gameId)
+				: [...current, gameId],
+		);
+	};
 
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
-		if (!name.trim()) return;
-
-		onRegister({
+		if (!name.trim()) {
+			setFormError("Enter the person's name.");
+			return;
+		}
+		if (gameIds.length === 0) {
+			setFormError("Choose at least one game.");
+			return;
+		}
+		const custom =
+			customRate.trim() === "" ? undefined : rupeesToPaise(customRate);
+		if (custom === null) {
+			setFormError(
+				"Enter the custom monthly amount in rupees, or leave it empty.",
+			);
+			return;
+		}
+		if (type === "guest" && custom !== undefined) {
+			setFormError("Guests pay per visit, so they have no monthly amount.");
+			return;
+		}
+		setFormError(null);
+		onSubmit({
 			name: name.trim(),
 			type,
 			batch,
-			gameIds: [selectedGameId],
+			gameIds,
 			contactNumber: phone.trim() || undefined,
 			address: address.trim() || undefined,
-			customMonthlyAmount: customRate
-				? parseInt(customRate, 10) * 100
-				: undefined,
+			customMonthlyAmount: custom,
 		});
-		onClose();
 	};
 
+	const field =
+		"w-full h-9 px-3 mt-1 text-xs rounded-lg border border-input bg-background text-foreground font-normal";
+
 	return (
-		<div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
-			<div className="w-full max-w-sm p-4 rounded-xl border border-border bg-background shadow-xl">
+		<div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-black/50">
+			<div className="w-full max-w-sm max-h-[90dvh] overflow-y-auto p-4 rounded-xl border border-border bg-background">
 				<div className="flex items-center justify-between pb-3 border-b border-border">
-					<span className="text-sm font-bold text-foreground">
-						Register Academy Member
-					</span>
+					<span className="text-sm font-bold text-foreground">{title}</span>
 					<button
 						type="button"
 						onClick={onClose}
 						className="p-1 text-muted-foreground hover:text-foreground"
+						aria-label="Close"
 					>
 						<X className="w-4 h-4" />
 					</button>
@@ -70,92 +117,114 @@ export function RegisterModal({
 
 				<form onSubmit={handleSubmit} className="flex flex-col gap-3 pt-3">
 					<label className="block text-[11px] font-semibold text-muted-foreground">
-						Full Name
+						Full name
 						<input
+							name="name"
 							type="text"
-							required
+							autoComplete="off"
 							value={name}
 							onChange={(e) => setName(e.target.value)}
-							placeholder="e.g. Rohan Varma"
-							className="w-full h-9 px-3 mt-1 text-xs rounded-lg border border-input bg-background text-foreground font-normal focus:ring-1 focus:ring-teal-700"
+							className={field}
 						/>
 					</label>
 
 					<div className="grid grid-cols-2 gap-2">
 						<label className="block text-[11px] font-semibold text-muted-foreground">
-							Category
+							Type
 							<select
+								name="type"
 								value={type}
-								onChange={(e) => setType(e.target.value as any)}
-								className="w-full h-9 px-2.5 mt-1 text-xs rounded-lg border border-input bg-background text-foreground font-normal"
+								onChange={(e) => setType(e.target.value as PersonForm["type"])}
+								className={field}
 							>
-								<option value="student">Student (Coached)</option>
-								<option value="member">Member (Regular)</option>
-								<option value="guest">Guest (Per visit)</option>
+								<option value="student">Student (trained)</option>
+								<option value="member">Member (plays regularly)</option>
+								<option value="guest">Guest (per visit)</option>
 							</select>
 						</label>
 						<label className="block text-[11px] font-semibold text-muted-foreground">
-							Sport
+							Batch
 							<select
-								value={selectedGameId}
-								onChange={(e) => setSelectedGameId(e.target.value)}
-								className="w-full h-9 px-2.5 mt-1 text-xs rounded-lg border border-input bg-background text-foreground font-normal"
+								name="batch"
+								value={batch}
+								onChange={(e) =>
+									setBatch(e.target.value as PersonForm["batch"])
+								}
+								className={field}
 							>
-								{availableGames.map((g) => (
-									<option key={g.id} value={g.id}>
-										{g.name}
-									</option>
-								))}
+								<option value="morning">Morning</option>
+								<option value="evening">Evening</option>
+								<option value="both">Both</option>
 							</select>
 						</label>
 					</div>
 
-					<div className="grid grid-cols-2 gap-2">
-						<label className="block text-[11px] font-semibold text-muted-foreground">
-							Batch
-							<select
-								value={batch}
-								onChange={(e) => setBatch(e.target.value as any)}
-								className="w-full h-9 px-2.5 mt-1 text-xs rounded-lg border border-input bg-background text-foreground font-normal"
-							>
-								<option value="morning">Morning</option>
-								<option value="evening">Evening</option>
-								<option value="both">Both Batches</option>
-							</select>
-						</label>
-						<label className="block text-[11px] font-semibold text-muted-foreground">
-							Phone
-							<input
-								type="tel"
-								value={phone}
-								onChange={(e) => setPhone(e.target.value)}
-								placeholder="10-digit number"
-								className="w-full h-9 px-3 mt-1 text-xs rounded-lg border border-input bg-background text-foreground font-normal"
-							/>
-						</label>
-					</div>
+					<fieldset>
+						<legend className="text-[11px] font-semibold text-muted-foreground">
+							Games
+						</legend>
+						<div className="mt-1 flex flex-wrap gap-2">
+							{games.map((game) => (
+								<label
+									key={game.id}
+									className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs rounded-lg border border-input cursor-pointer"
+								>
+									<input
+										type="checkbox"
+										checked={gameIds.includes(game.id)}
+										onChange={() => toggleGame(game.id)}
+									/>
+									{game.name}
+								</label>
+							))}
+						</div>
+					</fieldset>
+
+					<label className="block text-[11px] font-semibold text-muted-foreground">
+						Phone
+						<input
+							name="phone"
+							type="tel"
+							autoComplete="off"
+							value={phone}
+							onChange={(e) => setPhone(e.target.value)}
+							className={field}
+						/>
+					</label>
 
 					<label className="block text-[11px] font-semibold text-muted-foreground">
 						Address
 						<input
+							name="address"
 							type="text"
+							autoComplete="off"
 							value={address}
 							onChange={(e) => setAddress(e.target.value)}
-							placeholder="Area / street"
-							className="w-full h-9 px-3 mt-1 text-xs rounded-lg border border-input bg-background text-foreground font-normal"
+							className={field}
 						/>
 					</label>
 
-					<label className="block text-[11px] font-semibold text-muted-foreground">
-						Custom Monthly Fee (₹, optional override)
-						<input
-							type="number"
-							value={customRate}
-							onChange={(e) => setCustomRate(e.target.value)}
-							placeholder="Standard rate applied if empty"
-							className="w-full h-9 px-3 mt-1 text-xs rounded-lg border border-input bg-background text-foreground font-normal mono-num"
-						/>
-					</label>
+					{type !== "guest" && (
+						<label className="block text-[11px] font-semibold text-muted-foreground">
+							Monthly amount (₹), only for two or more games
+							<input
+								name="custom-amount"
+								type="text"
+								inputMode="numeric"
+								autoComplete="off"
+								value={customRate}
+								onChange={(e) => setCustomRate(e.target.value)}
+								placeholder="Leave empty to use the settings rate"
+								className={`${field} mono-num`}
+							/>
+						</label>
+					)}
+
+					{(formError || error) && (
+						<p role="alert" className="text-xs font-semibold text-rose-600">
+							{formError ?? error}
+						</p>
+					)}
 
 					<div className="flex justify-end gap-2 pt-2">
 						<button
@@ -167,9 +236,10 @@ export function RegisterModal({
 						</button>
 						<button
 							type="submit"
-							className="px-3 py-1.5 text-xs font-bold rounded-lg bg-teal-700 text-white hover:bg-teal-800"
+							disabled={busy}
+							className="px-3 py-1.5 text-xs font-bold rounded-lg bg-teal-700 text-white hover:bg-teal-800 disabled:opacity-40"
 						>
-							Save Member
+							{busy ? "Saving…" : submitLabel}
 						</button>
 					</div>
 				</form>

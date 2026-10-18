@@ -71,6 +71,8 @@ Rejected: counting attendance days and automatically replacing the monthly fee. 
 
 ## 2026-10-11 — Sign in with Clerk, public sign-up blocked
 
+Superseded 2026-10-14: see "No sign-in for now" below.
+
 Use Clerk. The academy creates the users and gives them access. Public sign-up is blocked.
 
 Why: the owner will create the users, and wants the same sign-in if members get access later.
@@ -79,7 +81,7 @@ Rejected: removing Clerk and hosting email and password ourselves. That would th
 
 ## 2026-10-11 — Attendance is a manual list for now
 
-Partly superseded 2026-10-11: who adds the list. See "One management role" below. The list is still manual, and it is still not generated from a timetable.
+Superseded 2026-10-14: who adds the list is management, and the list is now the batch roster. See "Attendance shows the whole batch" below. It is still not generated from a timetable.
 
 The coach adds people to attendance at the session, for example during warm-up. The app does not generate that list from a weekly timetable in this version.
 
@@ -95,6 +97,32 @@ Why: the owner said to assume only the management view for now.
 
 Rejected: a coach login that can mark attendance but cannot see fees. That split is deferred. The access rule in `AGENTS.md` still applies if a coach role is added later.
 
+## 2026-10-14 — Frontend is a static shell; data comes from server functions
+
+The owner asked for static generation with API calls. The page shell is built as static files. Each screen loads its data once through a server function. Hovering a tab does not fetch.
+
+Why: fewer repeated calls, and the screens no longer re-render on the server for each visit.
+
+Rejected: keeping per-request server rendering and only trimming the duplicate calls.
+
+## 2026-10-14 — Attendance shows the whole batch
+
+Each batch list shows every active member and student for that batch. Neither button is selected until someone is marked. Tapping the selected button clears the mark. Someone inactive appears only if already marked that day.
+
+Why: the owner said marking everyone in a list is faster than searching for them.
+
+Rejected: an empty session that management searches to add people.
+
+## 2026-10-14 — No sign-in for now
+
+The owner said to drop Clerk for now and finish the app. The Clerk provider is bypassed, so there is no login. This supersedes "Sign in with Clerk" above. Sign-in must be restored before real data is entered. Clerk can come back when it is time.
+
+## 2026-10-14 — Money changes are appended, never edited
+
+A fee correction is a new row that keeps the amount it replaced. A payment that fully covers a month freezes that month at its amount, so a later rate change does not move it. A reversal is a new row that points at the payment, and a payment can be reversed once.
+
+Why: the owner's rule is that payments are append-only, and a rate change never rewrites a settled month.
+
 ## 2026-10-11 — Leave is corrected when management finds out
 
 People can stop coming without notice. The monthly fee still appears. The settle list shows who has not been marked present, and that hint does not change the amount. Missing days do not remove the fee.
@@ -109,7 +137,17 @@ Rejected: a switch that has to be set before they leave. Also rejected: the app 
 
 ## 2026-10-11 — Strict component decomposition (< 300 lines) and URL state with nuqs
 
-All component and route files are strictly under 300 lines of code. Complex views are decomposed into focused subcomponents (e.g. `day-scroller.tsx`, `attendee-card.tsx`, `add-player-row.tsx`, `settle-card.tsx`, `settle-summary.tsx`, `fee-action-card.tsx`, `ledger-table.tsx`, `sport-pricing-card.tsx`).
+All component and route files are strictly under 300 lines of code. Complex views are decomposed into focused subcomponents (e.g. `day-scroller.tsx`, `attendee-card.tsx`, `add-guest-modal.tsx`, `settle-row.tsx`, `settle-modal.tsx`, `settle-summary.tsx`, `fee-action-card.tsx`, `ledger-table.tsx`, `sport-pricing-card.tsx`).
 
 All interactive query state (month stepper, day scroller, batch/sport/status filters, search bars) is synchronized with URL search parameters using `nuqs`, making mobile views bookmarkable and refresh-resilient without global state bloat.
+
+## 2026-10-18 — Settle page: one row per person, payment in a popup
+
+The settle page shows one row per person: name, the amount owed, and one button. The button reads "Receive payment", or "Enter amount" when this month's amount is missing. It opens a popup with the breakdown (earlier months, this month, visits, already paid), the amount received, how it was paid (Cash, UPI, or Other as three buttons), and a link to the full ledger. Money rules are unchanged. The amount received can be partial, and a missing month's amount is typed before a payment.
+
+Earlier unpaid money still shows in red on the row. The "no attendance marked this month" hint is still shown and still does not change an amount.
+
+Why: the owner said the settle page was hard to follow, and older users cannot read it easily. The old card showed the breakdown, two forms, and a payment dropdown all at once. The attendance page is the simpler model: one line per person and one clear action.
+
+Rejected: making the existing inline forms smaller. Every field would still be on screen at once. Also rejected: a separate page per person, because it adds a screen to go back from.
 

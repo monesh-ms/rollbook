@@ -1,33 +1,28 @@
 # Status
 
-As of 2026-10-11.
+As of 2026-10-18.
 
 ## Current state
 
-- **Database & Persistence:** Locked 9-table Drizzle schema (`drizzle/0000_faithful_the_hood.sql`) migrated into `dev.db` using native `bun:sqlite`. Seeded initial MS Sports Academy records, sports (Badminton, Tennis), 6 members, fees, and payments via `src/db/seed.ts`.
-- **Server API Functions (`@tanstack/react-start`):**
-  - `src/lib/api/attendance.ts`: `getAttendanceByDate`, `markAttendance`, `quickAddAttendee`, `getMonthAttendanceDots`.
-  - `src/lib/api/settle.ts`: `getMonthSettlement`, `recordPayment`, `recordGuestVisitAndPayment`, `adjustMonthlyFee`, `reversePayment`.
-  - `src/lib/api/members.ts`: `getMembers`, `registerMember`, `getMemberLedger`, `updateMemberStatus`.
-  - `src/lib/api/settings.ts`: `getSettings`, `updateGameRates`.
-- **Frontend Routes & Components (`< 300 lines` strict invariant):**
-  - Permanent bottom tab navigation (`Today`, `Settle`, `People`, `Settings`) in `src/components/layout/bottom-nav.tsx` and `src/routes/__root.tsx`.
-  - URL state management powered by `nuqs` across all filters, month steppers, and search bars.
-  - `/attendance`: 1-tap roll call, interactive day scroller with attendance dots, filter chips, quick add attendee row.
-  - `/settle`: Month settlement summary, arrears breakdown, quick collection actions (Cash/UPI).
-  - `/people`: Member roster, search by name/mobile, category filter chips, member registration modal.
-  - `/people/$id`: Detailed player ledger, balance summary, fee waiver, switch to visit charges, active/inactive toggle, payment reversal.
-  - `/settings`: Academy details, live editable sports pricing with instant persistence.
-- **Verification:**
-  - `bun run --bun tsc --noEmit` exits with code 0 (zero errors).
-  - `bun run --bun check src/` exits with code 0 (zero errors).
-  - `bun run --bun build` successfully generates full client & Nitro bundle in 510ms.
+The app runs as a website. The page shell is built as static files, and each screen loads its data once through a server function.
 
-## Next
+- **Today:** one list per batch (morning, evening). It shows the members and students of that batch. Tap Present or Absent. Tap the selected one again to clear it. Someone not yet marked has no selection. Guests are added to one session by name and game. Each batch card has an Add guest button that opens a popup. The popup stays open, so several guests can be added in a row, and it lists the guests already in that session.
+- **Settle:** for the chosen month, everyone who still owes money, one row each with the amount owed and one button. Receive payment (or Enter amount, when this month's amount is missing) opens a popup with the breakdown, the amount received, and how it was paid. Earlier unpaid amounts roll into the total and show in red on the row. A payment can be partial. A month fully paid is frozen at its amount.
+- **People:** the roster, with active, inactive and type filters. Add a person.
+- **Person:** the log (fees, corrections, visits, payments, reversals). Record a payment, correct a month, add a visit charge, reverse a payment, set active or inactive, edit details.
+- **Settings:** member and student monthly rate, and guest rate per visit, for each game. Add a game. A rate change applies only to unsettled months.
 
-- Finalize Clerk authentication integration when ready for multi-tenant deployment.
-- Optional PWA service worker manifest for installable mobile icon.
+Checks run on 2026-10-18: type check, Biome, 16 unit tests (`bun test`). Neither the Add guest popup nor the settle redesign has been opened in a browser yet. The test browser could not load the dev server: a framework module failed to load and the page kept reloading. Check both screens on a real phone or desktop browser.
+
+Checks run on 2026-10-14: type check, Biome, 16 unit tests (`bun test`), and a production build that prerenders the shell. In the browser: marks stay on their own date, guest add, payment, reversal, waiver, visit charge, settled-month freeze, and call counts (one call per tab click, none on hover). Those browser checks predate the Add guest popup.
+
+Not yet reviewed on a real phone screen.
+
+## Known gaps
+
+1. **No sign-in.** Clerk is bypassed by owner decision (see `decisions.md`). Anyone who can reach the server can record payments and change fees. Fix this before real money data is entered.
+2. **Development database.** `dev.db` holds sample members and payments from the seed. Do not use it for real records.
 
 ## Open questions
 
-None.
+1. **Settle hint counts absent marks.** `domain.md` says the settle list shows who has not been marked **present**. The code hides the hint when a person has any mark for the month, including absent. Also the "Marked this month" filter uses the same check. The owner needs to confirm which is right before the code changes.

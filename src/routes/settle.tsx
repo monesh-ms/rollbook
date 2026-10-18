@@ -1,145 +1,194 @@
-import { createFileRoute, useRouter } from "@tanstack/react-router";
+import {
+	createFileRoute,
+	useNavigate,
+	useRouter,
+} from "@tanstack/react-router";
 import { parseAsString, useQueryState } from "nuqs";
-import { useTransition } from "react";
+import { useState } from "react";
 import { MobileHeader } from "../components/layout/mobile-header";
-import { SettleCard } from "../components/settle/settle-card";
+import {
+	type PaymentDraft,
+	SettleModal,
+} from "../components/settle/settle-modal";
+import { SettleRow } from "../components/settle/settle-row";
 import { SettleSummary } from "../components/settle/settle-summary";
 import { FilterChips } from "../components/ui/filter-chips";
 import { MonthStepper } from "../components/ui/month-stepper";
+import { Notice } from "../components/ui/notice";
 import { SearchBar } from "../components/ui/search-bar";
-import { getMonthSettlement, recordPayment } from "../lib/api/settle";
+import {
+	adjustMonthlyFee,
+	getMonthSettlement,
+	recordPayment,
+} from "../lib/api/settle";
+import { errorText } from "../lib/money";
 
 export const Route = createFileRoute("/settle")({
-	validateSearch: (
-		search: Record<string, unknown>,
-	): {
-		month?: string;
-		tab?: string;
-		q?: string;
-	} => ({
-		month: (search.month as string) || "2026-10",
-		tab: (search.tab as string) || "all",
-		q: (search.q as string) || "",
+	validateSearch: (search: Record<string, unknown>): { month?: string } => ({
+		month: typeof search.month === "string" ? search.month : undefined,
 	}),
-	loaderDeps: ({ search }) => ({
-		month: search.month || "2026-10",
-	}),
-	loader: async ({ deps }) => {
-		const settleData = await getMonthSettlement({
-			data: { month: deps.month },
-		});
-		return { settleData };
-	},
+	loaderDeps: ({ search }) => ({ month: search.month }),
+	loader: ({ deps }) =>
+		getMonthSettlement({ data: deps.month ? { month: deps.month } : {} }),
 	component: SettlePage,
 });
 
 function SettlePage() {
-	const { settleData } = Route.useLoaderData();
+	const data = Route.useLoaderData();
 	const router = useRouter();
-	const [, startTransition] = useTransition();
+	const navigate = useNavigate({ from: "/settle" });
+	const [selectedId, setSelectedId] = useState<string | null>(null);
+	const [busy, setBusy] = useState(false);
+	const [error, setError] = useState<string | null>(null);
 
-	const [month] = useQueryState("month", parseAsString.withDefault("2026-10"));
 	const [tabFilter] = useQueryState("tab", parseAsString.withDefault("all"));
 	const [searchQuery] = useQueryState("q", parseAsString.withDefault(""));
 
-	const handleQuickCollect = async (memberId: string, amountPaise: number) => {
-		const method = confirm("Collect via UPI? Click Cancel for Cash.")
-			? "upi"
-			: "cash";
+	const selected = data.accounts.find(
+		(account) => account.memberId === selectedId,
+	);
+
+	const [year, monthNumber] = data.month.split("-").map(Number);
+	const monthLabel = new Date(
+		Date.UTC(year, monthNumber - 1, 1),
+	).toLocaleDateString("en-IN", {
+		month: "long",
+		year: "numeric",
+		timeZone: "UTC",
+	});
+
+	const selectMonth = (month: string) => {
+		void navigate({ search: (prev) => ({ ...prev, month }) });
+	};
+
+	const openAccount = (memberId: string) => {
+		setError(null);
+		setSelectedId(memberId);
+	};
+
+	const closeAccount = () => {
+		setError(null);
+		setSelectedId(null);
+	};
+
+	/** Returns true when the change was saved. A failed change keeps the popup open with the message. */
+	const runAction = async (
+		action: () => Promise<unknown>,
+	): Promise<boolean> => {
+		setError(null);
+		setBusy(true);
 		try {
-			await recordPayment({
-				data: {
-					memberId,
-					amount: amountPaise,
-					paymentMethod: method,
-					notes: `Quick settlement for ${month}`,
-				},
-			});
-			startTransition(() => {
-				router.invalidate();
-			});
+			await action();
+			await router.invalidate();
+			return true;
 		} catch (err) {
-			console.error("Failed to record payment:", err);
-			alert("Error recording payment");
+			setError(errorText(err));
+			return false;
+		} finally {
+			setBusy(false);
 		}
 	};
 
-	const filteredAccounts = settleData.accounts.filter((acc) => {
+	const handlePay = async (draft: PaymentDraft) => {
+		const saved = await runAction(() =>
+			recordPayment({
+				data: {
+					memberId: draft.memberId,
+					amount: draft.amount,
+					paymentMethod: draft.paymentMethod,
+				},
+			}),
+		);
+		if (saved) setSelectedId(null);
+	};
+
+	const handleSetAmount = async (memberId: string, amount: number) => {
+		const saved = await runAction(() =>
+			adjustMonthlyFee({
+				data: {
+					memberId,
+					month: data.month,
+					action: "set_amount",
+					amount,
+				},
+			}),
+		);
+		if (saved) setSelectedId(null);
+	};
+
+	const accounts = data.accounts.filter((account) => {
 		if (
 			searchQuery &&
-			!acc.name.toLowerCase().includes(searchQuery.toLowerCase())
+			!account.name.toLowerCase().includes(searchQuery.toLowerCase())
 		) {
 			return false;
 		}
-		if (tabFilter === "arrears" && acc.priorArrears <= 0) {
+		if (tabFilter === "arrears" && account.carriedOver <= 0) return false;
+		if (tabFilter === "attended" && !account.hasAttendanceThisMonth)
 			return false;
-		}
-		if (tabFilter === "attended" && !acc.hasAttendanceThisMonth) {
-			return false;
-		}
 		return true;
-	});
-
-	const monthLabel = new Date(`${month}-01`).toLocaleDateString("en-IN", {
-		month: "long",
-		year: "numeric",
 	});
 
 	return (
 		<div className="flex flex-col flex-1">
-			<MobileHeader title="Settle & Dues" subtitle={monthLabel} />
+			<MobileHeader title="Settle" subtitle={monthLabel} />
 
-			<MonthStepper />
+			<MonthStepper month={data.month} onChange={selectMonth} />
 
 			<div className="p-4 bg-background border-b border-border space-y-3">
 				<SettleSummary
-					monthName={monthLabel}
-					totalDuePaise={settleData.summary.totalDue}
-					priorArrearsPaise={settleData.summary.priorArrears}
+					monthLabel={monthLabel}
+					totalOwed={data.summary.totalOwed}
+					carriedOver={data.summary.carriedOver}
+					unsettledCount={data.summary.unsettledCount}
+					needsAmountCount={data.summary.needsAmountCount}
 				/>
 
-				<SearchBar placeholder="Search unsettled member..." />
+				<SearchBar placeholder="Search by name…" />
 
 				<div className="flex items-center gap-2 overflow-x-auto pb-0.5">
 					<FilterChips
 						paramName="tab"
 						options={[
-							{ label: `All (${settleData.accounts.length})`, value: "all" },
-							{ label: "With Arrears", value: "arrears" },
-							{ label: "Attended This Month", value: "attended" },
+							{ label: `All (${data.accounts.length})`, value: "all" },
+							{ label: "From earlier months", value: "arrears" },
+							{ label: "Marked this month", value: "attended" },
 						]}
 					/>
 				</div>
 			</div>
 
-			<div className="p-4">
-				<div className="rounded-xl border border-border bg-background overflow-hidden shadow-xs">
-					<div className="px-4 py-2.5 bg-secondary/50 border-b border-border flex items-center justify-between">
-						<span className="text-xs font-extrabold uppercase tracking-wider text-foreground">
-							Unsettled Members
-						</span>
-						<span className="text-[11px] font-bold text-muted-foreground">
-							{filteredAccounts.length} Pending
-						</span>
-					</div>
-
-					<div className="divide-y divide-border">
-						{filteredAccounts.map((account) => (
-							<SettleCard
-								key={account.memberId}
-								account={account}
-								onQuickCollect={handleQuickCollect}
-							/>
-						))}
-
-						{filteredAccounts.length === 0 && (
-							<div className="p-8 text-center text-xs text-muted-foreground">
-								All accounts settled for this view! ✓
-							</div>
-						)}
-					</div>
+			<div className="p-4 space-y-4">
+				{error && !selected && <Notice>{error}</Notice>}
+				<div className="rounded-xl border border-border bg-background overflow-hidden">
+					{accounts.map((account) => (
+						<SettleRow
+							key={account.memberId}
+							account={account}
+							onOpen={() => openAccount(account.memberId)}
+						/>
+					))}
+					{accounts.length === 0 && (
+						<div className="p-8 text-center text-sm text-muted-foreground">
+							Nobody left to settle in this view.
+						</div>
+					)}
 				</div>
 			</div>
+
+			{selected && (
+				<SettleModal
+					account={selected}
+					monthLabel={monthLabel}
+					busy={busy}
+					error={error}
+					onClose={closeAccount}
+					onPay={(draft) => void handlePay(draft)}
+					onSetAmount={(memberId, amount) =>
+						void handleSetAmount(memberId, amount)
+					}
+				/>
+			)}
 		</div>
 	);
 }

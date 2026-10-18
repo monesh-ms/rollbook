@@ -1,229 +1,267 @@
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { ArrowLeft, MapPin, Phone } from "lucide-react";
-import { useTransition } from "react";
+import { useState } from "react";
 import { MobileHeader } from "../../components/layout/mobile-header";
-import { FeeActionCard } from "../../components/person/fee-action-card";
+import {
+	type PersonForm,
+	PersonModal,
+} from "../../components/people/register-modal";
 import { LedgerTable } from "../../components/person/ledger-table";
-import { getMemberLedger, updateMemberStatus } from "../../lib/api/members";
+import {
+	type MonthActionInput,
+	MonthActions,
+} from "../../components/person/month-actions";
+import {
+	PaymentForm,
+	type PaymentInput,
+} from "../../components/person/payment-form";
+import { VisitForm, type VisitInput } from "../../components/person/visit-form";
+import { Notice } from "../../components/ui/notice";
+import {
+	getMemberLedger,
+	updateMember,
+	updateMemberStatus,
+} from "../../lib/api/members";
 import {
 	adjustMonthlyFee,
 	recordPayment,
+	recordVisitCharge,
 	reversePayment,
 } from "../../lib/api/settle";
+import { errorText, formatInr } from "../../lib/money";
 
 export const Route = createFileRoute("/people/$id")({
-	loader: async ({ params }) => {
-		const data = await getMemberLedger({ data: { memberId: params.id } });
-		return { data };
-	},
-	component: PersonDetailPage,
+	loader: ({ params }) => getMemberLedger({ data: { memberId: params.id } }),
+	component: PersonPage,
 });
 
-function PersonDetailPage() {
-	const { data } = Route.useLoaderData();
+function PersonPage() {
+	const ledger = Route.useLoaderData();
 	const router = useRouter();
-	const [, startTransition] = useTransition();
+	const { member } = ledger;
+	const [busy, setBusy] = useState(false);
+	const [error, setError] = useState<string | null>(null);
+	const [editing, setEditing] = useState(false);
 
-	const member = data.member;
 	const isInactive = member.status === "inactive";
+	const games = ledger.games.map((game) => ({
+		id: game.id,
+		name: game.name,
+		guestVisitAmount: game.guestVisitAmount,
+	}));
 
-	const refresh = () => {
-		startTransition(() => {
-			router.invalidate();
-		});
-	};
-
-	const handleCollectPayment = async (amountPaise: number) => {
-		const method = confirm("Collect via UPI? Click Cancel for Cash.")
-			? "upi"
-			: "cash";
+	const run = async (action: () => Promise<unknown>, onDone?: () => void) => {
+		setError(null);
+		setBusy(true);
 		try {
-			await recordPayment({
-				data: {
-					memberId: member.id,
-					amount: amountPaise,
-					paymentMethod: method,
-					notes: "Direct payment collection",
-				},
-			});
-			refresh();
+			await action();
+			onDone?.();
+			await router.invalidate();
 		} catch (err) {
-			console.error("Failed to record payment:", err);
-			alert("Error recording payment");
+			setError(errorText(err));
+		} finally {
+			setBusy(false);
 		}
 	};
 
-	const handleWaiveFee = async () => {
-		const month = prompt("Enter month to waive (YYYY-MM):", "2026-10");
-		if (!month) return;
-		try {
-			await adjustMonthlyFee({
+	const handlePayment = (input: PaymentInput) =>
+		run(() => recordPayment({ data: { memberId: member.id, ...input } }));
+
+	const handleMonth = (input: MonthActionInput) =>
+		run(() =>
+			adjustMonthlyFee({
 				data: {
 					memberId: member.id,
-					month,
-					action: "waive_no_fee",
+					...input,
+					reason: "Set on the person page",
 				},
-			});
-			refresh();
-		} catch (err) {
-			console.error("Failed to waive fee:", err);
-			alert("Error waiving fee");
-		}
-	};
-
-	const handleSwitchToVisits = async (count: number) => {
-		const month = prompt("Enter month to switch (YYYY-MM):", "2026-10");
-		if (!month) return;
-		try {
-			await adjustMonthlyFee({
-				data: {
-					memberId: member.id,
-					month,
-					action: "switch_to_visits",
-					visitCount: count,
-				},
-			});
-			refresh();
-		} catch (err) {
-			console.error("Failed to switch to visits:", err);
-			alert("Error adjusting fee");
-		}
-	};
-
-	const handleToggleStatus = async (newStatus: "active" | "inactive") => {
-		const reason = prompt(
-			`Reason for setting to ${newStatus}:`,
-			"Management update",
+			}),
 		);
-		try {
-			await updateMemberStatus({
+
+	const handleVisit = (input: VisitInput) =>
+		run(() => recordVisitCharge({ data: { memberId: member.id, ...input } }));
+
+	const handleReverse = (paymentId: string) =>
+		run(() =>
+			reversePayment({ data: { paymentId, reason: "Reversed by management" } }),
+		);
+
+	const handleStatus = () =>
+		run(() =>
+			updateMemberStatus({
 				data: {
 					memberId: member.id,
-					status: newStatus,
-					reason: reason || undefined,
+					status: isInactive ? "active" : "inactive",
 				},
-			});
-			refresh();
-		} catch (err) {
-			console.error("Failed to update status:", err);
-			alert("Error updating status");
-		}
-	};
+			}),
+		);
 
-	const handleReversePayment = async (paymentId: string) => {
-		const reason = prompt("Reason for reversal:", "Mistaken entry");
-		try {
-			await reversePayment({
-				data: {
-					paymentId,
-					reason: reason || undefined,
-				},
-			});
-			refresh();
-		} catch (err) {
-			console.error("Failed to reverse payment:", err);
-			alert("Error reversing payment");
-		}
-	};
+	const handleSave = (form: PersonForm) =>
+		run(
+			() => updateMember({ data: { memberId: member.id, ...form } }),
+			() => setEditing(false),
+		);
+
+	const owed = ledger.owed;
+	const isGuest = member.type === "guest";
 
 	return (
 		<div className="flex flex-col flex-1">
 			<MobileHeader
 				title={member.name}
-				subtitle={`${member.type.toUpperCase()} • ${member.sports.join(", ")}`}
+				subtitle={`${member.type} · ${member.sports.join(", ")}`}
 			/>
 
-			<div className="p-4 bg-background border-b border-border space-y-3">
-				<div className="flex items-center gap-2">
-					<Link
-						to="/people"
-						className="flex items-center gap-1 text-xs font-semibold text-muted-foreground hover:text-foreground"
-					>
-						<ArrowLeft className="w-4 h-4" />
-						<span>Back to People</span>
-					</Link>
-				</div>
+			<div className="p-4 space-y-4">
+				<Link
+					to="/people"
+					className="flex items-center gap-1 text-xs font-semibold text-muted-foreground hover:text-foreground w-fit"
+				>
+					<ArrowLeft className="w-4 h-4" />
+					<span>Back to people</span>
+				</Link>
 
-				<div className="flex items-start justify-between">
-					<div>
-						<div className="flex items-center gap-2">
+				<section className="p-4 rounded-xl border border-border bg-background space-y-2">
+					<div className="flex items-start justify-between gap-3">
+						<div>
 							<h2 className="text-lg font-extrabold text-foreground">
 								{member.name}
 							</h2>
-							<span
-								className={`px-2 py-0.5 text-[10px] font-bold rounded-full border ${
-									isInactive
-										? "bg-muted text-muted-foreground border-border"
-										: "bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800"
-								}`}
-							>
-								{member.status}
-							</span>
+							<p className="text-xs text-muted-foreground capitalize">
+								{member.type} · {member.batch} batch
+								{isInactive && " · Inactive"}
+							</p>
 						</div>
-						<p className="text-xs text-muted-foreground mt-0.5">
-							Batch:{" "}
-							<span className="capitalize font-semibold text-foreground">
-								{member.batch}
-							</span>
-							{" • "}
-							Sports:{" "}
-							<span className="font-semibold text-foreground">
-								{member.sports.join(", ")}
-							</span>
-						</p>
-					</div>
-				</div>
-
-				{(member.contactNumber || member.address) && (
-					<div className="flex items-center gap-4 text-xs text-muted-foreground pt-1 border-t border-border flex-wrap">
-						{member.contactNumber && (
-							<a
-								href={`tel:${member.contactNumber}`}
-								className="flex items-center gap-1.5 hover:text-foreground"
+						<div className="flex gap-2">
+							<button
+								type="button"
+								disabled={busy}
+								onClick={() => setEditing(true)}
+								className="h-8 px-2.5 text-xs font-semibold rounded-lg border border-border hover:bg-secondary disabled:opacity-40"
 							>
-								<Phone className="w-3.5 h-3.5 text-teal-700 dark:text-teal-400" />
-								<span>{member.contactNumber}</span>
-							</a>
-						)}
-						{member.address && (
-							<div className="flex items-center gap-1.5">
-								<MapPin className="w-3.5 h-3.5 text-muted-foreground" />
-								<span>{member.address}</span>
-							</div>
-						)}
+								Edit
+							</button>
+							<button
+								type="button"
+								disabled={busy}
+								onClick={() => void handleStatus()}
+								className="h-8 px-2.5 text-xs font-semibold rounded-lg border border-border hover:bg-secondary disabled:opacity-40"
+							>
+								{isInactive ? "Set active" : "Set inactive"}
+							</button>
+						</div>
 					</div>
+					{(member.contactNumber || member.address) && (
+						<div className="flex items-center gap-4 text-xs text-muted-foreground pt-2 border-t border-border flex-wrap">
+							{member.contactNumber && (
+								<a
+									href={`tel:${member.contactNumber}`}
+									className="flex items-center gap-1.5"
+								>
+									<Phone className="w-3.5 h-3.5" />
+									<span>{member.contactNumber}</span>
+								</a>
+							)}
+							{member.address && (
+								<span className="flex items-center gap-1.5">
+									<MapPin className="w-3.5 h-3.5" />
+									<span>{member.address}</span>
+								</span>
+							)}
+						</div>
+					)}
+				</section>
+
+				<section className="p-4 rounded-xl border border-border bg-background">
+					<span className="text-[11px] font-semibold text-muted-foreground">
+						{owed < 0 ? "Credit with the academy" : "Owed now"}
+					</span>
+					<div className="mt-0.5 text-2xl font-extrabold mono-num text-foreground">
+						{formatInr(Math.abs(owed))}
+					</div>
+					{!isGuest && (
+						<p className="mt-1 text-xs text-muted-foreground">
+							This month:{" "}
+							{ledger.currentCharge?.amount === null
+								? "amount not set yet"
+								: formatInr(ledger.currentCharge?.amount ?? 0)}
+						</p>
+					)}
+				</section>
+
+				{error && <Notice>{error}</Notice>}
+
+				{!isGuest && (
+					<section className="p-4 rounded-xl border border-border bg-background space-y-4">
+						<h3 className="text-xs font-bold text-foreground">
+							Record payment
+						</h3>
+						<PaymentForm
+							key={owed}
+							suggested={Math.max(0, owed)}
+							busy={busy}
+							onSubmit={(input) => void handlePayment(input)}
+						/>
+					</section>
 				)}
-			</div>
 
-			<div className="p-4 space-y-4">
-				{/* Outstanding Dues & Fee Adjustment Actions */}
-				<FeeActionCard
-					memberId={member.id}
-					suggestedBalancePaise={data.currentBalanceOwed}
-					onCollectPayment={handleCollectPayment}
-					onWaiveFee={handleWaiveFee}
-					onSwitchToVisits={handleSwitchToVisits}
-					onToggleStatus={handleToggleStatus}
-					isInactive={isInactive}
-				/>
+				{!isGuest && (
+					<section className="p-4 rounded-xl border border-border bg-background space-y-4">
+						<h3 className="text-xs font-bold text-foreground">Monthly fee</h3>
+						<MonthActions
+							currentMonth={ledger.currentMonth}
+							busy={busy}
+							onSubmit={(input) => void handleMonth(input)}
+						/>
+					</section>
+				)}
 
-				{/* Append-Only Financial Ledger */}
-				<div className="space-y-2">
-					<div className="flex items-center justify-between">
-						<span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-							Financial Ledger & Audit Trail
-						</span>
-						<span className="text-[11px] font-medium text-muted-foreground">
-							{data.ledger.length} Transactions
-						</span>
-					</div>
+				{member.type !== "member" && (
+					<section className="p-4 rounded-xl border border-border bg-background space-y-4">
+						<h3 className="text-xs font-bold text-foreground">Add a visit</h3>
+						<VisitForm
+							games={games}
+							today={ledger.today}
+							busy={busy}
+							onSubmit={(input) => void handleVisit(input)}
+						/>
+					</section>
+				)}
 
+				<section className="p-4 rounded-xl border border-border bg-background">
+					<h3 className="text-xs font-bold text-foreground mb-2">Log</h3>
+					<p className="text-[11px] text-muted-foreground mb-2">
+						Entries are never edited. A mistake is fixed with a reversal or a
+						correction.
+					</p>
 					<LedgerTable
-						items={data.ledger}
-						onReversePayment={handleReversePayment}
+						lines={ledger.lines}
+						busy={busy}
+						onReverse={(id) => void handleReverse(id)}
 					/>
-				</div>
+				</section>
 			</div>
+
+			{editing && (
+				<PersonModal
+					title="Edit details"
+					submitLabel="Save changes"
+					games={games.map((game) => ({ id: game.id, name: game.name }))}
+					initial={{
+						name: member.name,
+						type: member.type,
+						batch: member.batch,
+						gameIds: member.games.map((game) => game.id),
+						contactNumber: member.contactNumber ?? undefined,
+						address: member.address ?? undefined,
+						customMonthlyAmount: member.customMonthlyAmount ?? undefined,
+					}}
+					busy={busy}
+					error={error}
+					onClose={() => setEditing(false)}
+					onSubmit={(form) => void handleSave(form)}
+				/>
+			)}
 		</div>
 	);
 }

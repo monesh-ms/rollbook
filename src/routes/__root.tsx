@@ -19,7 +19,7 @@ export const Route = createRootRoute({
 					"width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no",
 			},
 			{
-				title: "Roll Book • MS Sports Academy",
+				title: "Roll Book",
 			},
 		],
 		links: [

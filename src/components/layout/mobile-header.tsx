@@ -9,7 +9,7 @@ interface MobileHeaderProps {
 
 export function MobileHeader({
 	title = "Roll Book",
-	subtitle = "MS Sports Academy",
+	subtitle = "",
 	action,
 }: MobileHeaderProps) {
 	const [isDark, setIsDark] = useState(false);

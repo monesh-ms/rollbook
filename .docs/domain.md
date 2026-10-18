@@ -20,13 +20,13 @@ A member or student can stop coming without saying so. Management finds out only
 
 ## Who signs in
 
-This version has one role: management. Management marks attendance and records fees. No coach login and no member login. See `decisions.md`.
+This version has one role: management. Management marks attendance and records fees. No coach login and no member login. There is no sign-in yet. See `decisions.md`.
 
 ## Attendance
 
 The first version replaces the attendance sheet and the fee notebook together.
 
-Management adds people to a session and marks present or absent. The list is not built from a weekly timetable. Automation comes later. See `decisions.md`.
+Each session lists the active members and students of that batch. Management marks each one present or absent. A person who has not been marked has no mark. That is not the same as absent. Guests are added to one session only. The list is not built from a weekly timetable. See `decisions.md`.
 
 The app does not change a fee because someone was absent. Someone not added to a session has no mark. That is not the same as absent.
 

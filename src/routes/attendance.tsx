@@ -1,57 +1,52 @@
-import { createFileRoute, useRouter } from "@tanstack/react-router";
+import {
+	createFileRoute,
+	useNavigate,
+	useRouter,
+} from "@tanstack/react-router";
+import { Plus } from "lucide-react";
 import { parseAsString, useQueryState } from "nuqs";
-import { useState, useTransition } from "react";
-import { AddPlayerRow } from "../components/attendance/add-player-row";
+import { useState } from "react";
+import { AddGuestModal } from "../components/attendance/add-guest-modal";
 import { AttendeeCard } from "../components/attendance/attendee-card";
 import { DayScroller } from "../components/attendance/day-scroller";
 import { MobileHeader } from "../components/layout/mobile-header";
 import { FilterChips } from "../components/ui/filter-chips";
 import { MonthStepper } from "../components/ui/month-stepper";
+import { Notice } from "../components/ui/notice";
 import { SearchBar } from "../components/ui/search-bar";
 import {
-	getAttendanceByDate,
-	getMonthAttendanceDots,
+	addGuestToSession,
+	getAttendanceDay,
+	type Mark,
 	markAttendance,
-	quickAddAttendee,
+	type RosterEntry,
 } from "../lib/api/attendance";
+import { errorText } from "../lib/money";
+import { dateInMonth, monthOf } from "../lib/time";
 
 export const Route = createFileRoute("/attendance")({
-	validateSearch: (
-		search: Record<string, unknown>,
-	): {
-		month?: string;
-		date?: string;
-		batch?: string;
-		sport?: string;
-		q?: string;
-	} => ({
-		month: (search.month as string) || "2026-10",
-		date: (search.date as string) || "2026-10-11",
-		batch: (search.batch as string) || "all",
-		sport: (search.sport as string) || "all",
-		q: (search.q as string) || "",
+	validateSearch: (search: Record<string, unknown>): { date?: string } => ({
+		date: typeof search.date === "string" ? search.date : undefined,
 	}),
-	loaderDeps: ({ search }) => ({
-		date: search.date || "2026-10-11",
-		month: search.month || "2026-10",
-	}),
-	loader: async ({ deps }) => {
-		const [attData, dots] = await Promise.all([
-			getAttendanceByDate({ data: { date: deps.date } }),
-			getMonthAttendanceDots({ data: { month: deps.month } }),
-		]);
-		return { attData, dots };
-	},
+	loaderDeps: ({ search }) => ({ date: search.date }),
+	loader: ({ deps }) =>
+		getAttendanceDay({ data: deps.date ? { date: deps.date } : {} }),
 	component: AttendancePage,
 });
 
-function AttendancePage() {
-	const { attData, dots } = Route.useLoaderData();
-	const router = useRouter();
-	const [, startTransition] = useTransition();
+type Batch = "morning" | "evening";
+type Pending = Record<string, { status: Mark }>;
 
-	const [date] = useQueryState("date", parseAsString.withDefault("2026-10-11"));
-	const [month] = useQueryState("month", parseAsString.withDefault("2026-10"));
+const batchLabel: Record<Batch, string> = {
+	morning: "Morning batch",
+	evening: "Evening batch",
+};
+
+function AttendancePage() {
+	const data = Route.useLoaderData();
+	const router = useRouter();
+	const navigate = useNavigate({ from: "/attendance" });
+
 	const [batchFilter] = useQueryState(
 		"batch",
 		parseAsString.withDefault("all"),
@@ -62,110 +57,184 @@ function AttendancePage() {
 	);
 	const [searchQuery] = useQueryState("q", parseAsString.withDefault(""));
 
-	// Local optimistic attendance map
-	const [optimisticMarks, setOptimisticMarks] = useState<
-		Record<string, "present" | "absent">
-	>({});
+	// Marks shown before the server confirms them. Keyed by date so one day never shows another day's mark.
+	const [pending, setPending] = useState<Pending>({});
+	const [error, setError] = useState<string | null>(null);
+	const [busy, setBusy] = useState(false);
+	const [guestBatch, setGuestBatch] = useState<Batch | null>(null);
 
-	const handleToggle = async (
-		memberId: string,
-		batch: "morning" | "evening",
-		status: "present" | "absent",
+	const pendingKey = (memberId: string, batch: Batch) =>
+		`${data.date}|${memberId}|${batch}`;
+
+	const statusOf = (entry: RosterEntry, batch: Batch): Mark => {
+		const key = pendingKey(entry.memberId, batch);
+		return key in pending ? pending[key].status : entry.status;
+	};
+
+	const reload = async (key?: string) => {
+		try {
+			await router.invalidate();
+		} finally {
+			if (key) {
+				setPending((prev) => {
+					const next = { ...prev };
+					delete next[key];
+					return next;
+				});
+			}
+		}
+	};
+
+	const handleMark = async (
+		entry: RosterEntry,
+		batch: Batch,
+		next: "present" | "absent" | "clear",
 	) => {
-		const key = `${memberId}_${batch}`;
-		setOptimisticMarks((prev) => ({ ...prev, [key]: status }));
-
+		const key = pendingKey(entry.memberId, batch);
+		setError(null);
+		setPending((prev) => ({
+			...prev,
+			[key]: { status: next === "clear" ? null : next },
+		}));
 		try {
 			await markAttendance({
 				data: {
-					date,
+					date: data.date,
 					batch,
-					memberId,
-					status,
+					memberId: entry.memberId,
+					status: next,
 				},
 			});
-			startTransition(() => {
-				router.invalidate();
-			});
 		} catch (err) {
-			console.error("Failed to mark attendance:", err);
+			setError(errorText(err));
+		} finally {
+			await reload(key);
 		}
 	};
 
-	const handleAddPlayer = async (
+	const handleAddGuest = async (
+		batch: Batch,
 		name: string,
-		batch: "morning" | "evening",
-	) => {
+		gameId: string,
+	): Promise<boolean> => {
+		setError(null);
+		setBusy(true);
 		try {
-			await quickAddAttendee({
-				data: {
-					name,
-					batch,
-					date,
-				},
+			await addGuestToSession({
+				data: { date: data.date, batch, name, gameId },
 			});
-			startTransition(() => {
-				router.invalidate();
-			});
+			await router.invalidate();
+			return true;
 		} catch (err) {
-			console.error("Failed to quick add attendee:", err);
+			setError(errorText(err));
+			return false;
+		} finally {
+			setBusy(false);
 		}
 	};
 
-	const filterList = (list: typeof attData.morning) => {
-		return list.filter((item) => {
-			if (
-				searchQuery &&
-				!item.name.toLowerCase().includes(searchQuery.toLowerCase())
-			) {
-				return false;
-			}
-			if (sportFilter !== "all" && !item.sports.includes(sportFilter)) {
-				return false;
-			}
-			return true;
-		});
+	const openGuests = (batch: Batch) => {
+		setError(null);
+		setGuestBatch(batch);
 	};
 
-	const morningFiltered = filterList(attData.morning);
-	const eveningFiltered = filterList(attData.evening);
+	const closeGuests = () => {
+		setError(null);
+		setGuestBatch(null);
+	};
+
+	const selectDate = (date: string) => {
+		void navigate({ search: (prev) => ({ ...prev, date }) });
+	};
+
+	const selectMonth = (month: string) => {
+		selectDate(dateInMonth(data.date, month));
+	};
+
+	const matches = (entry: RosterEntry) => {
+		if (
+			searchQuery &&
+			!entry.name.toLowerCase().includes(searchQuery.toLowerCase())
+		) {
+			return false;
+		}
+		if (sportFilter !== "all" && !entry.sports.includes(sportFilter))
+			return false;
+		return true;
+	};
 
 	const showMorning = batchFilter === "all" || batchFilter === "morning";
 	const showEvening = batchFilter === "all" || batchFilter === "evening";
 
-	const totalPresent =
-		attData.summary.presentCount +
-		Object.values(optimisticMarks).filter((s) => s === "present").length -
-		Object.entries(optimisticMarks).filter(
-			([k, s]) =>
-				s === "absent" &&
-				attData.morning
-					.concat(attData.evening)
-					.find((i) => `${i.memberId}_${i.batch}` === k)?.status === "present",
-		).length;
+	const morningRows = data.morning.filter(matches);
+	const eveningRows = data.evening.filter(matches);
+
+	const presentCount = [
+		...data.morning.map((entry) => statusOf(entry, "morning")),
+		...data.evening.map((entry) => statusOf(entry, "evening")),
+	].filter((status) => status === "present").length;
+
+	const roster = (batch: Batch, rows: RosterEntry[]) => (
+		<div className="rounded-xl border border-border bg-background overflow-hidden">
+			<div className="px-4 py-2.5 bg-secondary/50 border-b border-border flex items-center justify-between">
+				<span className="text-xs font-extrabold text-foreground">
+					{batchLabel[batch]}
+				</span>
+				<div className="flex items-center gap-3">
+					<span className="text-[11px] font-bold text-muted-foreground">
+						{rows.length} {rows.length === 1 ? "person" : "people"}
+					</span>
+					<button
+						type="button"
+						onClick={() => openGuests(batch)}
+						className="flex items-center gap-1 h-7 px-2.5 text-xs font-semibold rounded-md bg-background border border-border text-foreground hover:bg-secondary"
+					>
+						<Plus className="w-3.5 h-3.5" />
+						<span>Add guest</span>
+					</button>
+				</div>
+			</div>
+			<div>
+				{rows.map((entry) => (
+					<AttendeeCard
+						key={`${entry.memberId}-${batch}`}
+						name={entry.name}
+						type={entry.type}
+						sports={entry.sports}
+						status={statusOf(entry, batch)}
+						onMark={(next) => void handleMark(entry, batch, next)}
+					/>
+				))}
+				{rows.length === 0 && (
+					<div className="p-6 text-center text-xs text-muted-foreground">
+						No one matches this view.
+					</div>
+				)}
+			</div>
+		</div>
+	);
 
 	return (
 		<div className="flex flex-col flex-1">
-			<MobileHeader title="Attendance" subtitle="1-Tap Roll Call" />
+			<MobileHeader title="Attendance" subtitle="Today's roll" />
 
-			{/* Month Filter */}
-			<MonthStepper />
+			<MonthStepper month={monthOf(data.date)} onChange={selectMonth} />
 
-			{/* Day Scroller */}
 			<DayScroller
-				selectedMonth={month}
-				dots={dots}
-				tallySummary={`${Math.max(0, totalPresent)} Present`}
+				selectedDate={data.date}
+				today={data.today}
+				dots={data.dots}
+				tallySummary={`${presentCount} present`}
+				onSelect={selectDate}
 			/>
 
-			{/* Search & Filters */}
 			<div className="p-4 bg-background border-b border-border space-y-2.5">
-				<SearchBar placeholder="Search attendee by name..." />
+				<SearchBar placeholder="Search by name…" />
 				<div className="flex items-center gap-2 overflow-x-auto pb-0.5">
 					<FilterChips
 						paramName="batch"
 						options={[
-							{ label: "All Batches", value: "all" },
+							{ label: "All batches", value: "all" },
 							{ label: "Morning", value: "morning" },
 							{ label: "Evening", value: "evening" },
 						]}
@@ -174,96 +243,33 @@ function AttendancePage() {
 					<FilterChips
 						paramName="sport"
 						options={[
-							{ label: "All Sports", value: "all" },
-							{ label: "Badminton", value: "Badminton" },
-							{ label: "Tennis", value: "Tennis" },
+							{ label: "All games", value: "all" },
+							...data.games.map((game) => ({
+								label: game.name,
+								value: game.name,
+							})),
 						]}
 					/>
 				</div>
 			</div>
 
-			{/* Rosters */}
 			<div className="p-4 space-y-4">
-				{showMorning && (
-					<div className="rounded-xl border border-border bg-background overflow-hidden shadow-xs">
-						<div className="px-4 py-2.5 bg-secondary/50 border-b border-border flex items-center justify-between">
-							<span className="text-xs font-extrabold uppercase tracking-wider text-foreground">
-								Morning Batch (6:00 - 9:00 AM)
-							</span>
-							<span className="text-[11px] font-bold text-muted-foreground">
-								{morningFiltered.length} Members
-							</span>
-						</div>
-						<div className="divide-y divide-border">
-							{morningFiltered.map((item) => (
-								<AttendeeCard
-									key={item.id}
-									id={item.id}
-									memberId={item.memberId}
-									name={item.name}
-									type={item.type}
-									sports={item.sports}
-									status={
-										optimisticMarks[`${item.memberId}_morning`] ?? item.status
-									}
-									onToggleStatus={(newStatus) =>
-										handleToggle(item.memberId, "morning", newStatus)
-									}
-								/>
-							))}
-							{morningFiltered.length === 0 && (
-								<div className="p-6 text-center text-xs text-muted-foreground">
-									No attendees matching filter.
-								</div>
-							)}
-						</div>
-						<AddPlayerRow
-							batch="morning"
-							onAddPlayer={(name) => handleAddPlayer(name, "morning")}
-						/>
-					</div>
-				)}
-
-				{showEvening && (
-					<div className="rounded-xl border border-border bg-background overflow-hidden shadow-xs">
-						<div className="px-4 py-2.5 bg-secondary/50 border-b border-border flex items-center justify-between">
-							<span className="text-xs font-extrabold uppercase tracking-wider text-foreground">
-								Evening Batch (4:30 - 8:00 PM)
-							</span>
-							<span className="text-[11px] font-bold text-muted-foreground">
-								{eveningFiltered.length} Members
-							</span>
-						</div>
-						<div className="divide-y divide-border">
-							{eveningFiltered.map((item) => (
-								<AttendeeCard
-									key={item.id}
-									id={item.id}
-									memberId={item.memberId}
-									name={item.name}
-									type={item.type}
-									sports={item.sports}
-									status={
-										optimisticMarks[`${item.memberId}_evening`] ?? item.status
-									}
-									onToggleStatus={(newStatus) =>
-										handleToggle(item.memberId, "evening", newStatus)
-									}
-								/>
-							))}
-							{eveningFiltered.length === 0 && (
-								<div className="p-6 text-center text-xs text-muted-foreground">
-									No attendees matching filter.
-								</div>
-							)}
-						</div>
-						<AddPlayerRow
-							batch="evening"
-							onAddPlayer={(name) => handleAddPlayer(name, "evening")}
-						/>
-					</div>
-				)}
+				{error && !guestBatch && <Notice>{error}</Notice>}
+				{showMorning && roster("morning", morningRows)}
+				{showEvening && roster("evening", eveningRows)}
 			</div>
+
+			{guestBatch && (
+				<AddGuestModal
+					batchLabel={batchLabel[guestBatch]}
+					games={data.games}
+					guests={data[guestBatch].filter((entry) => entry.type === "guest")}
+					busy={busy}
+					error={error}
+					onClose={closeGuests}
+					onAdd={(name, gameId) => handleAddGuest(guestBatch, name, gameId)}
+				/>
+			)}
 		</div>
 	);
 }

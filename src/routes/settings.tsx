@@ -1,87 +1,86 @@
 import { createFileRoute, useRouter } from "@tanstack/react-router";
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { MobileHeader } from "../components/layout/mobile-header";
 import { AcademyInfoCard } from "../components/settings/academy-info-card";
-import { SportPricingCard } from "../components/settings/sport-pricing-card";
+import {
+	AddGameForm,
+	type NewGame,
+} from "../components/settings/add-game-form";
+import {
+	type GameRate,
+	SportPricingCard,
+} from "../components/settings/sport-pricing-card";
+import { Notice } from "../components/ui/notice";
 import { getSettings, updateGameRates } from "../lib/api/settings";
+import { errorText } from "../lib/money";
 
 export const Route = createFileRoute("/settings")({
-	loader: async () => {
-		const data = await getSettings();
-		return { data };
-	},
+	loader: () => getSettings(),
 	component: SettingsPage,
 });
 
 function SettingsPage() {
-	const { data } = Route.useLoaderData();
+	const data = Route.useLoaderData();
 	const router = useRouter();
-	const [isSaving, startTransition] = useTransition();
-	const [savedSuccess, setSavedSuccess] = useState(false);
+	const [busy, setBusy] = useState(false);
+	const [error, setError] = useState<string | null>(null);
+	const [saved, setSaved] = useState<string | null>(null);
 
-	const handleSaveRate = async (
-		updatedGame: Parameters<typeof updateGameRates>[0]["data"]["games"][0],
+	const save = async (
+		games: Array<Partial<GameRate> & NewGame>,
+		message: string,
 	) => {
+		setError(null);
+		setSaved(null);
+		setBusy(true);
 		try {
-			await updateGameRates({
-				data: {
-					games: [updatedGame],
-				},
-			});
-			setSavedSuccess(true);
-			setTimeout(() => setSavedSuccess(false), 3000);
-			startTransition(() => {
-				router.invalidate();
-			});
+			await updateGameRates({ data: { games } });
+			setSaved(message);
+			await router.invalidate();
 		} catch (err) {
-			console.error("Failed to update game rates:", err);
-			alert("Error saving rate configuration");
+			setError(errorText(err));
+		} finally {
+			setBusy(false);
 		}
 	};
 
 	return (
 		<div className="flex flex-col flex-1">
-			<MobileHeader title="Settings" subtitle="Academy & Pricing Config" />
+			<MobileHeader title="Settings" subtitle="Academy and game rates" />
 
 			<div className="p-4 space-y-4">
-				{savedSuccess && (
-					<div className="p-3 text-xs font-semibold rounded-xl bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
-						Rates updated successfully! ✓
-					</div>
-				)}
+				{error && <Notice>{error}</Notice>}
+				{saved && <Notice tone="success">{saved}</Notice>}
 
 				<AcademyInfoCard academy={data.academy} />
 
 				<div className="space-y-3">
-					<div className="flex items-center justify-between">
-						<span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-							Sports Pricing & Fee Rules
-						</span>
-						<span className="text-[11px] font-medium text-muted-foreground">
-							{data.games.length} Sports Active
-						</span>
-					</div>
-
-					<div className="space-y-3">
-						{data.games.map((game: any) => (
-							<SportPricingCard
-								key={game.id}
-								game={game}
-								onSave={handleSaveRate}
-								isSaving={isSaving}
-							/>
-						))}
-					</div>
-				</div>
-
-				<div className="p-4 rounded-xl border border-border bg-secondary/30 text-xs text-muted-foreground space-y-1.5">
-					<div className="font-bold text-foreground">
-						Data Storage & Integrity
-					</div>
-					<p>
-						Operating on local SQLite via Bun. All changes to attendance and
-						financial dues are persisted atomically with full audit history.
-					</p>
+					<h3 className="text-xs font-bold text-foreground">Games and rates</h3>
+					{data.games.map((game) => (
+						<SportPricingCard
+							key={game.id}
+							game={game}
+							isSaving={busy}
+							onSave={(updated) =>
+								void save(
+									[
+										{
+											id: updated.id,
+											name: updated.name,
+											memberMonthlyAmount: updated.memberMonthlyAmount,
+											studentMonthlyAmount: updated.studentMonthlyAmount,
+											guestVisitAmount: updated.guestVisitAmount,
+										},
+									],
+									`${game.name} rates saved.`,
+								)
+							}
+						/>
+					))}
+					<AddGameForm
+						busy={busy}
+						onAdd={(game) => void save([game], `${game.name} added.`)}
+					/>
 				</div>
 			</div>
 		</div>
