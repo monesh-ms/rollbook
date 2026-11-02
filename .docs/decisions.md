@@ -181,5 +181,13 @@ Why: the owner requested deployment on Cloudflare with a single worker and a D1 
 
 Rejected: separating static hosting from API workers, or using an external hosted database over TCP/HTTP. A single worker with attached D1 keeps latency minimal, configuration unified in `wrangler.jsonc`, and operational complexity at the lowest level that holds.
 
+## 2026-11-02 — Scrollable modal architecture on mobile devices
+
+The person modal (`PersonModal`) uses a pinned header (title and close button), a scrollable form body (`overflow-y-auto`, `overscroll-contain`, `max-h-[calc(100dvh-2rem)]`), and a pinned footer (Cancel and Save buttons). The full fields (name, type, batch, games, phone, address, and custom monthly amount) are retained.
+
+Why: on mobile devices and when the virtual keyboard is active, unconstrained or unpartitioned modal dialogs overflow the viewport, push controls into negative coordinates, or cause scroll chaining to the underlying document. Pinning the header and action buttons ensures essential controls remain visible while the input fields scroll smoothly within the dynamic viewport height (`100dvh`).
+
+Rejected: deleting non-mandatory form fields to prevent overflow. Phone numbers, addresses, and multi-game fee overrides are core member information and must remain enterable on mobile devices.
+
 
 
